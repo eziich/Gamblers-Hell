@@ -1,0 +1,500 @@
+﻿@page "/wrath"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject UserService UserService
+@inject HttpClient HttpClient
+@inject NavMenuState NavMenuState
+@inject TransactionService TransactionService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Wrath @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000, #120d09, #1e0f0a, #2a1c12, #3f2a1a);
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px #1e0f0a;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #8b4513 !important;
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .score-chip {
+        background-color: #1e0f0a !important; /* Matching the third gradient color */
+        border: 1px solid #8b4513 !important; /* Sophisticated brown border */
+        color: #cd853f !important; /* Peru brown for a rich, earthy tone */
+        box-shadow: 0 0 10px rgba(139, 69, 19, 0.4); /* Soft brown shadow */
+        font-family: 'Cinzel', serif;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle text depth */
+        transition: all 0.3s ease;
+    }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(139, 69, 19, 0.6)); /* Brown shadow replacing red */
+        transition: transform 0.3s ease;
+    }
+
+    .game-button {
+        background-color: #1e0f0a !important; /* Matching the third gradient color from body background */
+        color: #cd853f !important; /* Peru brown for a rich, earthy tone, similar to score-chip */
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #8b4513 !important; /* Brown border from score-chip */
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+        box-shadow: 0 0 10px rgba(139, 69, 19, 0.4); /* Soft brown shadow like score-chip */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle text depth */
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #2a1c12 !important; /* Slightly lighter version of background */
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(139, 69, 19, 0.6); /* Enhanced brown shadow */
+            color: #ff9999 !important; /* Maintaining the soft reddish tone */
+        }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 5)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+        @*Mobile Version*@
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudPaper Elevation="0" Class="transparentPaper d-flex justify-content-center align-items-center mb-5">
+                <MudText Class="title-text pulse-glow" Typo="Typo.h4">Beast Race</MudText>
+            </MudPaper>
+
+            <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center my-4">
+                <MudTooltip Text="@_demonMessage" Style="background-color:#1e0f0a !important" Placement="Placement.Right" Arrow="true">
+                    <MudImage Class="demon" Src="Demons/Wrath.png" Width="200" Height="200"></MudImage>
+                </MudTooltip>
+            </MudPaper>
+
+            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                <MudChip T="int" Class="score-chip" Size="Size.Large">
+                    <MudText>Win counter: @_winCounter</MudText>
+                </MudChip>
+                <MudButton Class="game-button my-2" Disabled="UserModel.Balance < _gameBet" @onclick=BeastRaceGame>Start the race</MudButton>
+                <MudChip T="int" Class="score-chip" Size="Size.Large">
+                    <MudIconButton Class="mr-4" Disabled="_gameBet<=50" @onclick="ReduceBet" Variant="Variant.Filled" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small"></MudIconButton>
+                    <MudText>@_gameBet</MudText>
+                    <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.AttachMoney"></MudIcon>
+                    <MudIconButton Class="ml-4" Disabled="@(_gameBet>=UserModel.Balance)" Variant="Variant.Filled" @onclick="IncreaseBet" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small"></MudIconButton>
+                </MudChip>
+            </MudPaper>
+
+            <MudContainer Class="d-flex flex-row my-2">
+
+                <MudContainer Class="d-flex flex-column">
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast1" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast1.gif"
+                                      Width="80" Height="80"
+                                      Style="@_ImageStyle1" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast2" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast2.gif"
+                                      Width="80" Height="80"
+                                      Style="@_ImageStyle2" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast3" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast3.gif"
+                                      Width="80" Height="80"
+                                      Style="@_ImageStyle3" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast4" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast4.gif"
+                                      Width="80" Height="80"
+                                      Style="@_ImageStyle4" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast5" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast5.gif"
+                                      Width="70" Height="80"
+                                      Style="@_ImageStyle5" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Class="my-2" Style="position: relative; height: 80px;">
+                        <MudSlider Value="@_beast6" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast6.gif"
+                                      Width="80" Height="80"
+                                      Style="@_ImageStyle6" />
+                        </MudSlider>
+                    </MudContainer>
+
+
+                </MudContainer>
+
+                <MudItem Class="d-flex flex-column">
+                    <MudIcon Size=Size.Large Style="color:white" Icon="@Icons.Material.Filled.SportsScore"></MudIcon>
+                    <MudDivider Class="d-flex justify-content-center align-content-center" Style="color:white" Vertical="true" />
+                </MudItem>
+
+            </MudContainer>
+        </MudHidden>
+
+        @*PC Version*@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudPaper Elevation="0" Class="transparentPaper d-flex justify-content-center align-items-center mb-5">
+                <MudText Class="title-text pulse-glow" Typo="Typo.h3">Beast Race</MudText>
+            </MudPaper>
+
+            <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center my-4">
+                <MudTooltip Text="@_demonMessage" Style="background-color:#1e0f0a !important" Placement="Placement.Right" Arrow="true">
+                    <MudImage Class="demon" Src="Demons/Wrath.png" Width="250" Height="250"></MudImage>
+                </MudTooltip>
+            </MudPaper>
+
+            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 transparentPaper">
+                <MudChip T="int" Class="score-chip" Size="Size.Large">
+                    <MudText>Win counter: @_winCounter</MudText>
+                </MudChip>
+                <MudButton Class="game-button mx-2" Disabled="UserModel.Balance < _gameBet" @onclick="BeastRaceGame">Start the race</MudButton>
+                <MudChip T="int" Class="score-chip" Size="Size.Large">
+                    <MudIconButton Class="mr-4" Disabled="_gameBet<=50" @onclick="ReduceBet" Variant="Variant.Filled" Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small"></MudIconButton>
+                    <MudText>@_gameBet</MudText>
+                    <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.AttachMoney"></MudIcon>
+                    <MudIconButton Class="ml-4" Disabled="@(_gameBet>=UserModel.Balance)" Variant="Variant.Filled" @onclick="IncreaseBet" Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small"></MudIconButton>
+                </MudChip>
+            </MudPaper>
+
+            <MudContainer Class="d-flex flex-row mt-4">
+
+                <MudContainer Class="d-flex flex-column">
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast1" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast1.gif"
+                                      Width="100" Height="100"
+                                      Style="@_ImageStyle1" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast2" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast2.gif"
+                                      Width="100" Height="100"
+                                      Style="@_ImageStyle2" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast3" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast3.gif"
+                                      Width="100" Height="100"
+                                      Style="@_ImageStyle3" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast4" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast4.gif"
+                                      Width="100" Height="100"
+                                      Style="@_ImageStyle4" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast5" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast5.gif"
+                                      Width="80" Height="100"
+                                      Style="@_ImageStyle5" />
+                        </MudSlider>
+                    </MudContainer>
+
+                    <MudContainer Style="position: relative; height: 100px;">
+                        <MudSlider Value="@_beast6" Max="100" Min="0" hidden Disabled="true" Style="width: 100%; position: absolute; top: 50px;">
+                            <MudImage Src="/GamesComponents/BeastRaceComponents/Beast6.gif"
+                                      Width="100" Height="100"
+                                      Style="@_ImageStyle6" />
+                        </MudSlider>
+                    </MudContainer>
+                </MudContainer>
+
+                <MudItem Class="d-flex flex-column">
+                    <MudIcon Size=Size.Large Style="color:white" Icon="@Icons.Material.Filled.SportsScore"></MudIcon>
+                    <MudDivider Class="d-flex justify-content-center align-content-center" Style="height:100%; max-width:3px; color:white" Vertical="true" />
+                </MudItem>
+
+            </MudContainer>
+        </MudHidden>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _gameBet = 50;
+    private int _currentGameLevel = 5;
+    private int _gameProgressionLevel = 6;
+    private int _winCounter = 0;
+    private int _beast1 = 0;
+    private int _beast2 = 0;
+    private int _beast3 = 0;
+    private int _beast4 = 0;
+    private int _beast5 = 0;
+    private int _beast6 = 0;
+    private int _gameWinValue = 0;
+    private int _selectedBeast = 0;
+    private bool _pageLoading = true;
+    private bool _stop = false;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+
+    private string _demonMessage = "Start the race if you dare, mortal";
+    private string _ImageStyle1 => $"position: absolute; left: {_beast1}%; transform: translateX(-50%);";
+    private string _ImageStyle2 => $"position: absolute; left: {_beast2}%; transform: translateX(-50%);";
+    private string _ImageStyle3 => $"position: absolute; left: {_beast3}%; transform: translateX(-50%);";
+    private string _ImageStyle4 => $"position: absolute; left: {_beast4}%; transform: translateX(-50%);";
+    private string _ImageStyle5 => $"position: absolute; left: {_beast5}%; transform: translateX(-50%);";
+    private string _ImageStyle6 => $"position: absolute; left: {_beast6}%; transform: translateX(-50%);";
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private string _gameSessionToken;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Wrath");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "Start the race if you dare, mortal";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+
+        if (UserModel.Level >= 5 && _accountVerified == 1)
+        {
+            await Task.Delay(100);
+            await SetBet();
+        }
+        _pageLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task SetBet()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = false, BackdropClick = false };
+        var dialog = await DialogService.ShowAsync<BeastRacePicker>("Set your bet", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _selectedBeast = (int)result.Data;
+        }
+    }
+
+    private void CheckBet()
+    {
+        if (_gameBet > UserModel.Balance)
+        {
+            Snackbar.Add("The bet cannot exceed your balance! Balance value has been set", Severity.Warning);
+            _gameBet = UserModel.Balance;
+        }
+    }
+
+    private Task BeastPicker()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<BeastRacePicker>("Simple Dialog", options);
+    }
+
+    public void IncreaseBet()
+    {
+        _gameBet = _gameBet + 50;
+    }
+
+    public void ReduceBet()
+    {
+        _gameBet = _gameBet - 50;
+    }
+
+    public async Task BeastRaceGame()
+    {
+        var random = new Random();
+        _stop = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+
+        while (_beast1 < 100 && _beast2 < 100 && _beast3 < 100 && _beast4 < 100 && _beast5 < 100 && _beast6 < 100)
+        {
+            await Task.Delay(100);
+
+            _beast1 += random.Next(0, 5);
+            _beast2 += random.Next(0, 5);
+            _beast3 += random.Next(0, 5);
+            _beast4 += random.Next(0, 5);
+            _beast5 += random.Next(0, 5);
+            _beast6 += random.Next(0, 5);
+
+            StateHasChanged();
+        }
+
+        if (_selectedBeast == 1 && _beast1 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            _winCounter += 1;
+        }
+
+        else if (_selectedBeast == 2 && _beast2 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            _winCounter += 1;
+        }
+
+        else if (_selectedBeast == 3 && _beast3 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            _winCounter += 1;
+        }
+
+        else if (_selectedBeast == 4 && _beast4 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            _winCounter += 1;
+        }
+
+        //The Eye
+        else if (_selectedBeast == 5 && _beast5 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            if (UserModel.BalanceAfterWin == 0)
+            {
+                await TransactionService.BeastRaceTheEye(_id);
+            }
+        }
+
+        else if (_selectedBeast == 6 && _beast6 >= 100)
+        {
+            Snackbar.Add("Your beast  won the race!", Severity.Success);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentGameLevel, "Wrath", _gameSessionToken);
+            _winCounter += 1;
+        }
+        else
+        {
+            Snackbar.Add("Lose! Another beast won the race.", Severity.Error);
+        }
+
+        _demonMessage = "Enjoy this fleeting victory. Wrath isn't beaten—it's delayed.";
+
+        if (_winCounter > 0 && _winCounter % 3 == 0)
+        {
+            Snackbar.Add("You won the game!", Severity.Success);
+            //User won the game for the first time, achivement
+            if (UserModel.Level == 5)
+            {
+                Snackbar.Add("Victory is sweet, but the road ahead is filled with fiercer beasts. Will your wrath be enough to conquer them all?", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Wrath", _gameSessionToken);
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                await Task.Delay(1000);
+                NavigationManager.NavigateTo("/belphegor");
+                return;
+            }
+            await TransactionService.GameWonTransaction(_id, _gameWinValue, _gameProgressionLevel, "Wrath", _gameSessionToken);
+        }
+
+        await Task.Delay(3000);
+        GameReset();
+        _stop = false;
+    }
+
+    public void GameReset()
+    {
+        _beast1 = 0;
+        _beast2 = 0;
+        _beast3 = 0;
+        _beast4 = 0;
+        _beast5 = 0;
+        _beast6 = 0;
+        _demonMessage = "Start the race if you dare, mortal";
+    }
+}

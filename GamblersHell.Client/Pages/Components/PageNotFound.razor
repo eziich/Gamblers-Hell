@@ -1,0 +1,142 @@
+﻿@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Shared
+@inject NavigationManager NavigationManager
+
+<PageTitle>Page not found @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+        color: #ff9999;
+        font-size: 60px;
+    }
+
+    .subtitle-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+        color: #ff9999;
+        font-size: 40px;
+    }
+
+    .hell-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border: 1px solid #ff6666;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .hell-button {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000);
+        color: #ff9999;
+        border: 1px solid #ff6666;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+        .hell-button:hover {
+            background-image: radial-gradient(circle, #5a0000, #3d0000, #2a0000);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+    .demon-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .error-icon {
+        font-size: 100px;
+        animation: glow 3s infinite alternate;
+    }
+
+    .latin-quote {
+        font-family: 'Cinzel', serif;
+        color: #ff9999;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        animation: glow 3s infinite alternate;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+</style>
+
+<PageTitle>Page Not Found</PageTitle>
+
+<MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center align-items-center" Style="background-color:transparent !important; min-width:100%; height:75px">
+    <MudImage Src="MainLogo.png" Height="75" ObjectFit="ObjectFit.Contain" />
+</MudPaper>
+
+<MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="d-flex flex-column align-center justify-center my-8">
+
+    <MudCard Elevation="3" Class="hell-card my-4 px-4 py-6">
+        <MudText Typo="Typo.h1" Class="title-text text-center mb-4">LOST SOUL</MudText>
+        <MudCardContent Class="d-flex flex-column align-center">
+            <div class="d-flex justify-content-center mb-4">
+                <span class="error-icon demon-float">👿</span>
+            </div>
+
+            <MudText Typo="Typo.h4" Class="subtitle-text text-center mb-4">PAGE NOT FOUND</MudText>
+
+            <MudText Typo="Typo.body1" Style="color: #ff9999; text-align: center;" Class="mb-4">
+                The path you seek does not exist in this realm. You've wandered too far into the abyss.
+            </MudText>
+
+            <MudText Class="latin-quote text-center mb-6" Typo="Typo.h5">
+                "Lasciate ogne speranza, voi ch'intrate"
+            </MudText>
+
+            <MudText Typo="Typo.subtitle1" Style="color: #ff6666; font-style: italic; text-align: center;" Class="mb-6">
+                "Abandon all hope, he who enters here"
+            </MudText>
+
+            <MudButton Variant="Variant.Filled"
+                       Size="Size.Large"
+                       Class="hell-button px-8"
+                       OnClick="@(() => NavigationManager.NavigateTo("/"))">
+                Return to Hell's Gate
+            </MudButton>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+
+}

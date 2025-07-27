@@ -1,0 +1,26 @@
+[
+  {
+    "ID": 1,
+    "Picture": "/GamesComponents/RiddleComponents/RiddleSymbol1.png"
+  },
+
+  {
+    "ID": 2,
+    "Picture": "/GamesComponents/RiddleComponents/RiddleSymbol2.png"
+  },
+
+  {
+    "ID": 3,
+    "Picture": "/GamesComponents/RiddleComponents/RiddleSymbol3.png"
+  },
+  {
+    "ID": 4,
+    "Picture": "/GamesComponents/RiddleComponents/RiddleSymbol4.png"
+  },
+
+  {
+    "ID": 5,
+    "Picture": "/GamesComponents/RiddleComponents/RiddleSymbol5.png"
+  }
+
+]

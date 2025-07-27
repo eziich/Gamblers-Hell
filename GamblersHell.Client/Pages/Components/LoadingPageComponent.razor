@@ -1,0 +1,23 @@
+﻿<style>
+    @@keyframes bounce {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .mud-image-loading {
+        animation: bounce 0.8s infinite ease-in-out;
+    }
+</style>
+
+<MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center align-items-center" Style="background-color:transparent !important; min-width:100%; height:75px">
+    <MudImage Src="MainLogo.png" Height=75 ObjectFit="ObjectFit.Contain" Class="mud-image-loading" />
+</MudPaper>
+
+@code {
+
+}

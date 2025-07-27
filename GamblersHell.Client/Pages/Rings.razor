@@ -1,0 +1,479 @@
+﻿@page "/rings"
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Client.Services
+@using GamblersHell.Models
+@using GamblersHell.Shared
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject UserService UserService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Rings @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+        color: #ff9999;
+    }
+
+    .ring-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .ring-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        margin-bottom: 2rem;
+    }
+
+    .inner-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+        padding: 1.5rem;
+    }
+
+    .demon-button {
+        background-color: #3d0000;
+        color: #ff9999;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ff9999;
+        border-radius: 4px;
+        margin-top: 1rem;
+        padding: 8px 20px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+        .demon-button:hover {
+            background-color: #5d0000;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+    .ring-image {
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        filter: contrast(1.2) saturate(1.2);
+    }
+
+    .quote-text {
+        font-style: italic;
+        font-weight: bold;
+        color: #ff9999;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+
+    .description-text {
+        color: #ff9999;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .divider {
+        background-color: #ff9999;
+        height: 2px;
+        opacity: 0.5;
+        margin: 2rem 0;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0)
+    {
+        <VerificationNotificationComponent />
+        <UserNotVerifiedHellInteraction/>
+    }
+    else
+    {
+        <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-2">
+            <div class="ring-container mb-4">
+                <MudText Typo="Typo.h2" Class="mb-3 d-flex justify-content-center align-content-center title-text">NINE RINGS OF HELL</MudText>
+            </div>
+
+            <MudContainer Class="d-flex flex-column mt-5">
+                <!-- Limbo -->
+                <MudCard Class="ring-card">
+                    <MudCard Class="inner-card">
+                        <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Limbo</MudText>
+                        <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                            "Here sighs and wails, and cries of bitterness,
+                            resound through the eternally darkened air."
+                        </MudText>
+                        <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                            Limbo is the first circle of Hell, a realm where the souls of the virtuous but unbaptized wander in eternal stasis.
+                            They are not tormented with physical pain, but neither do they experience the joy of salvation.
+                            These souls were not sinful, but they lived before Christ's time or did not know the true faith, leaving them forever separated from divine grace.
+                            The landscape of Limbo is serene but haunting—vast, tranquil fields stretching into the distance with towering, grandiose castles where the souls reside.
+                            There is no suffering in Limbo, yet the souls remain in a state of quiet longing, forever yearning for something they can never reach: the beatific vision.
+                            They cannot be saved, and thus their punishment is the eternal absence of fulfillment.
+                        </MudText>
+
+                        <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                            <MudImage Class="mr-2 ring-image" Src="Demons/Limbo.png" Width="200" Height="200"></MudImage>
+                            <MudImage Class="ml-2 ring-image" Src="GamesComponents/RiddleComponents/RiddleIcon.png" Width="200" Height="200"></MudImage>
+                        </MudContainer>
+
+                        <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                            <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/raum"))">RAUM</MudButton>
+                        </MudContainer>
+                    </MudCard>
+                </MudCard>
+
+                @if (UserModel.Level >= 2)
+                {
+                    <div class="divider"></div>
+                    <!-- Lust -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Lust</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "Love, that in my heart doth quickly start, did he who reigns above, once more create,
+                                and in that place where Love did open up, a flame that burned them both to their demise."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Second Circle is the domain of Lust, where the souls of those who gave in to passionate desires during their lives are eternally punished.
+                                The damned here are trapped in a violent, unending storm, forever blown about by fierce winds.
+                                These winds symbolize the uncontrollable and destructive nature of their desires—passions that led them to abandon reason and virtue.
+                                The storm in the Second Circle is relentless and disorienting.
+                                The souls are tossed and battered by the furious winds, symbolizing the way they were swept away by lust in their lives, unable to resist its all-consuming power.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Lust.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/LadyComponents/LadyIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/asmodeus"))">ASMODEUS</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 3)
+                {
+                    <!-- Gluttony -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Gluttony</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "They made themselves more vile in their lives' sin,
+                                and thus, by gluttony, they gave themselves to death."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Third Circle of Hell, where Gluttony reigns, is a place of relentless excess.
+                                Here, the souls of the gluttonous are eternally punished by lying in a vile, freezing slush while filthy, icy rain falls upon them.
+                                The ground beneath is a foul, putrid mire, a reflection of the insatiable greed for food and indulgence that defined their lives.
+                                They are eternally overwhelmed by hunger, thirst, and the desire for more, yet they can never satisfy their cravings.
+                                The cold, unsatisfying nature of the mire mirrors the souls' inability to find fulfillment, trapped in a cycle of perpetual longing.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Gluttony.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/CardWarsComponents/CardWarsIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/beelzebub"))">BEELZEBUB</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 4)
+                {
+                    <!-- Greed -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Greed</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "You who are greedy,
+                                let it be known to you that the pain you feel
+                                will never cease, nor will your gain ever be made clear."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Fourth Circle of Hell is a domain where the souls of the greedy are eternally punished.
+                                These individuals, driven by an insatiable hunger for wealth, power, and possessions, are now condemned to push massive, heavy weights in a constant, futile labor.
+                                They are forced to roll enormous boulders across the rocky landscape, eternally chasing after fortune that they can never fully possess.
+                                The weight of their desires is crushing, and the futility of their endless toil serves as the perfect punishment for their selfishness in life.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Greed.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/SlotsComponents/SlotsIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/mamoon"))">MAMOON</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 5)
+                {
+                    <!-- Wrath -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Wrath</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "The wrathful souls here know no rest,
+                                they rage against the current of their misery,
+                                and for eternity, their fury will not subside."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Fifth Circle of Hell is a place of Wrath, a fiery domain where the souls of the angry and vengeful are eternally punished.
+                                This circle is a chaotic, violent arena where souls are submerged in a vast, tumultuous river of boiling, blackened water.
+                                The souls of the wrathful are forced to fight each other in a never-ending frenzy, torn apart by their own rage, while those who were prone to the vice of sloth are weighed down in the depths,
+                                struggling to stay afloat.
+                                Their eternal punishment is to act out the very emotions that dominated their earthly lives: fury, hatred, and revenge.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Wrath.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/BeastRaceComponents/BeastRaceIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/belial"))">BELIAL</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 6)
+                {
+                    <!-- Heresy -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Heresy</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "In this abyss, the heretics are locked,
+                                with flames surrounding them, they lie in tombs of stone,
+                                their spirits sealed in their eternal graves."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Sixth Circle of Hell is a desolate and eerie graveyard, where the souls of the heretics—those who defied divine truth—are eternally bound in their tombs, condemned to burn forever in flaming sepulchers.
+                                The graveyard is vast, filled with hundreds of decaying mausoleums and cracked stone crypts, each one shrouded in a cloud of smoke that rises from the incessantly burning fires within.
+                                The heretics are trapped in their tombs, their bodies writhing in perpetual agony as they burn, their minds endlessly tortured by the fruits of their own skepticism and rebellion against higher truth.
+                                Above this forsaken cemetery, the air is thick with an unsettling quiet, broken only by the occasional crackling of flames and the sound of distant, whispered voices.
+                                The ground is littered with broken gravestones, their inscriptions worn away, representing the forgotten souls who dared to question the divine order.
+                                In this dark and haunting realm, there is no rest, only the torment of eternal doubt.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Hersey.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/HereticsRouletteComponents/HereticsRouletteIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/belphegor"))">BELPHEGOR</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+
+                @if (UserModel.Level >= 7)
+                {
+                    <!-- Violence -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Violence</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "In the violent river of blood they boil,
+                                and those who killed in rage or through cruelty
+                                are forever submerged in its infernal stream."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Seventh Circle of Hell is a realm defined by raw brutality and endless bloodshed.
+                                It is a landscape of desolation, where rivers of molten blood carve through jagged cliffs, and geysers of searing flame erupt from the ground like violent breaths from the heart of Hell itself.
+                                The air is thick with the acrid scent of burning flesh, and the sky is choked with thick clouds of smoke and ash that rain down like dust from a long-forgotten war.
+                                The sound of anguished screams fills the air—echoing cries from the damned souls whose eternal punishment is to reflect the violence they unleashed in life.
+                                The souls here are submerged in boiling rivers, bound in chains, or crucified on jagged rocks, perpetually exposed to the agony of their violent actions.
+                                Some are trapped in never-ending battles, forced to fight each other in a cruel mockery of their earthly lust for war and power.
+                                The land is a twisted battleground, and even the environment itself is a reflection of the pure savagery that defines this circle.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Violence.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/PokerComponents/PokerIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/baal"))">BAAL</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 8)
+                {
+                    <!-- Fraud -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Fraud</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "The soul of the deceiver, condemned to this abyss,
+                                flies in a never-ending chase of falsehoods,
+                                chased by their own endless lies."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Eighth Circle of Hell, known as Fraud, is a labyrinthine realm of treachery and illusion, where the souls of those who deceived, betrayed, and manipulated others are eternally punished.
+                                This circle is an ever-shifting landscape of mirrors and illusions, a maze of false realities that distort time and space.
+                                The ground is slick and reflective, stretching infinitely in all directions, creating an unnerving sense of disorientation.
+                                The air is heavy with whispers, soft and beguiling, as though the very atmosphere itself is conspiring to deceive.
+                                The souls condemned to Fraud are trapped in webs of lies, constantly chasing after shadows of truth that can never be grasped.
+                                The damned are enveloped in illusions of their own making, forced to perpetuate the very deceit they practiced in life, never knowing what is real or false.
+                                They are endlessly punished by their own tricks, constantly outwitting and betraying one another in an eternal game of manipulation.
+                                The landscape itself seems alive, constantly changing, mirroring the shifting nature of lies and deceit.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Fraud.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/PandoraComponents/PandoraIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/lilim"))">LILIM</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                    <div class="divider"></div>
+                }
+
+                @if (UserModel.Level >= 9)
+                {
+                    <!-- Treachery -->
+                    <MudCard Class="ring-card">
+                        <MudCard Class="inner-card">
+                            <MudText Class="title-text" Typo="Typo.h4" Align="Align.Center">Treachery</MudText>
+                            <MudText Class="my-2 quote-text" Align="Align.Center" Typo="Typo.body1">
+                                "Satan, the prince of treachery,
+                                gnaws on Judas, Brutus, and Cassius,
+                                their betrayal is his eternal feast."
+                            </MudText>
+                            <MudText Class="description-text" Align="Align.Center" Typo="Typo.body1">
+                                The Ninth Circle of Hell is a realm of searing torment and eternal despair, a maelstrom of hellfire and brimstone, where the very air reeks of blood and sulfur.
+                                The ground is scorched and cracked, pockmarked with deep, molten pits, each one simmering with fire, steam, and the endless screams of the betrayed.
+                                The sky is perpetually ablaze with streaks of fiery red and orange, casting an unholy glow over the barren wasteland below.
+                                Jagged, blackened spires rise from the earth, each one a twisted monument to the deceit and treachery that have plagued this forsaken domain.
+                                Here, the damned writhe and scream in agony, their bodies seared by fire, their minds shattered by endless nightmares.
+                                The souls trapped in the Ninth Circle are those who committed the ultimate betrayal—those who deceived and betrayed those closest to them.
+                                From Judas to the most pitiful traitor, all are condemned to burn in this infernal plane. Their screams fill the air, but they are not alone in their suffering.
+                                The very ground beneath their feet burns with unquenchable fire, and rivers of blood flow like rivers of lava, carrying the essence of all those who have ever been betrayed.
+                                The heat is unbearable, the pain relentless, and the fear of betrayal echoes through the flames.
+                                The cries of those who once reveled in their duplicity now reverberate across the hellish landscape as they are consumed by eternal torment.
+                                Shadows twist and move across the landscape, hiding things unseen, constantly whispering lies, teasing the souls of those who once believed in their own cunning.
+                                At the heart of this infernal realm stands Satan, the king of hell.
+                            </MudText>
+
+                            <MudContainer Class="d-flex flex-column flex-md-row justify-content-center align-content-center align-items-center my-4">
+                                <MudImage Class="mr-2 ring-image" Src="Demons/Treachery1.png" Width="200" Height="200"></MudImage>
+                                <MudImage Class="ml-2 ring-image" Src="GamesComponents/BlackJackComponents/BLackJackIcon.png" Width="200" Height="200"></MudImage>
+                            </MudContainer>
+
+                            <MudContainer Class="d-flex flex-row justify-content-center align-content-center mt-4">
+                                <MudButton Class="demon-button" OnClick="@(() => NavigateTo("/satan"))">SATAN</MudButton>
+                            </MudContainer>
+                        </MudCard>
+                    </MudCard>
+                }
+            </MudContainer>
+
+            <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+                <PageFooter />
+            </MudItem>
+        </MudItem>
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private bool _pageLoading = true;
+    private bool UserWonFinalgame => UserModel.BalanceAfterWin > 0;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+        _pageLoading = false;
+    }
+
+    public void NavigateTo(string targetUrl)
+    {
+        Navigation.NavigateTo(targetUrl);
+    }
+}

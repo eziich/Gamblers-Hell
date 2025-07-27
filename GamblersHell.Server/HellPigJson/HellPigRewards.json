@@ -1,0 +1,49 @@
+[
+  {
+    "ID": 1,
+    "reward": 500,
+    "picture": "HellPigComponents/1000.png"
+  },
+
+  {
+    "ID": 2,
+    "reward": 200,
+    "picture": "HellPigComponents/200.png"
+  },
+
+  {
+    "ID": 3,
+    "reward": 100,
+    "picture": "HellPigComponents/100.png"
+  },
+
+  {
+    "ID": 4,
+    "reward": 50,
+    "picture": "HellPigComponents/50.png"
+  },
+
+  {
+    "ID": 5,
+    "reward": 50,
+    "picture": "HellPigComponents/50.png"
+  },
+
+  {
+    "ID": 6,
+    "reward": 0,
+    "picture": "HellPigComponents/0.png"
+  },
+
+  {
+    "ID": 7,
+    "reward": 0,
+    "picture": "HellPigComponents/0.png"
+  },
+
+  {
+    "ID": 8,
+    "reward": 0,
+    "picture": "HellPigComponents/0.png"
+  }
+]

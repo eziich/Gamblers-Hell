@@ -1,0 +1,617 @@
+﻿@page "/fraud"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@inject PandoraService PandoraService
+@inject UserService UserService
+@inject TransactionService TransactionService
+@inject NavMenuState NavMenuState
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Fraud @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #ff9999 !important;
+    }
+
+    .game-card {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        border-radius: 8px;
+    }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6));
+    }
+
+    .game-button {
+        background-color: #3d0000 !important;
+        color: #ff9999 !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ff5555 !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #5d0000 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #ff0000, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    }
+
+    .score-chip {
+        background-color: #3d0000 !important;
+        border: 1px solid #ff5555 !important;
+        color: #ff9999 !important;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        font-family: 'Cinzel', serif;
+    }
+
+    .score-avatar {
+        background-color: #3d0000 !important;
+        border: 1px solid #ff5555 !important;
+        color: #ff9999 !important;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        font-weight: bold;
+    }
+
+    .cards-container {
+        background: rgba(10, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .playerCards {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        border-radius: 8px;
+    }
+
+        .playerCards:hover {
+            transform: translateY(-5px) scale(1.06);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+
+    .card-text {
+        font-family: 'Cinzel', serif;
+        color: #ff9999 !important;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+
+    @if (UserModel.Level < 8)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+            @*Mobile Version*@
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h4">Pandora's Box</MudText>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Arrow="true">
+                                    <MudImage Class="demon" Src="Demons/Fraud.png" Width="200" Height="200"></MudImage>
+                                </MudTooltip>
+                            </MudPaper>
+
+                            @if (_playGame)
+                            {
+                                <MudChip Class="score-chip" T="int">Flow: @UserModel.PandoraGameControl</MudChip>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-1 transparentPaper">
+
+                                    <MudChip Class="score-chip" T="string">Lilim's guessed cards:</MudChip>
+
+                                    <MudPaper Elevation="0" Style="min-height:100px" Class="d-flex flex-wrap flex-row justify-content-center align-items-center cards-container">
+                                        @if (CorrectCardsDealer.Count > 0)
+                                        {
+                                            @foreach (var card in CorrectCardsDealer)
+                                            {
+                                                <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                    <MudImage Class="game-card" Width="80" Height="100" Src="@card.Picture"></MudImage>
+                                                </MudPaper>
+                                            }
+                                        }
+                                    </MudPaper>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-3 transparentPaper">
+                                    @if (ChosenCardDealer != null && !string.IsNullOrEmpty(ChosenCardDealer.Type) && !string.IsNullOrEmpty(ChosenCardDealer.Picture))
+                                    {
+                                        <MudImage Class="game-card" Width="80" Height="100" Src="@ChosenCardDealer.Picture"></MudImage>
+                                    }
+                                    else
+                                    {
+                                        <MudImage Class="game-card" Width="80" Height="100" Src="/GamesComponents/PandoraComponents/PandoraCardBack.png"></MudImage>
+                                    }
+                                </MudPaper>
+
+                                <MudDivider Class="game-divider" />
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-3 transparentPaper">
+                                    <MudChip Color="Color.Error" Class="score-chip" T="string">Guess card:</MudChip>
+                                    @if (!string.IsNullOrEmpty(RandomPickedCard.Picture))
+                                    {
+                                        <MudImage Class="game-card" Width="80" Height="100" Src="@RandomPickedCard.Picture"></MudImage>
+                                    }
+                                    else
+                                    {
+                                        <MudImage Class="game-card" Width="80" Height="100" Src="/GamesComponents/PandoraComponents/PandoraCardBack.png"></MudImage>
+                                    }
+                                </MudPaper>
+
+
+                                <MudDivider Class="game-divider" />
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-3 transparentPaper">
+                                    <MudChip Color="Color.Error" Class="score-chip" T="string">Your guessed cards:</MudChip>
+                                    <MudPaper Elevation="0" Style="min-height:100px" Class="d-flex flex-row justify-content-center align-items-center cards-container">
+                                        @if (CorrectCardsPlayer.Count > 0)
+                                        {
+                                            @foreach (var card in CorrectCardsPlayer)
+                                            {
+                                                <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                    <MudImage Class="game-card" Width="80" Height="100" Src="@card.Picture"></MudImage>
+                                                </MudPaper>
+                                            }
+                                        }
+                                    </MudPaper>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-wrap flex-row justify-content-center align-items-center my-3 transparentPaper">
+                                    @if (ShownListCards.Count > 1)
+                                    {
+                                        @foreach (var card in ShownListCards)
+                                        {
+                                            <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                <MudImage @onclick="() => ChooseCard(card.Type)" Class="playerCards" Width="80" Height="100" Src="@card.Picture"></MudImage>
+                                                <MudText Class="card-text">@card.Type</MudText>
+                                            </MudPaper>
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudButton Class="game-button" Disabled="@(!_playAgain)" @onclick="GameReset">Play again</MudButton>
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                            }
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudHidden>
+
+            @*PC Version*@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h3">Pandora's Box</MudText>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Arrow="true">
+                                    <MudImage Class="demon" Src="Demons/Fraud.png" Width="250" Height="250"></MudImage>
+                                </MudTooltip>
+                            </MudPaper>
+
+                            @if (_playGame)
+                            {
+                                <MudChip Class="score-chip" T="int">Flow: @UserModel.PandoraGameControl</MudChip>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-3 transparentPaper">
+                                    <MudChip Color="Color.Error" Class="score-chip" T="string">Lilim's guessed cards:</MudChip>
+                                    <MudPaper Elevation="0" Style="min-height:120px" Class="d-flex flex-row justify-content-center align-items-center cards-container">
+                                        @if (CorrectCardsDealer.Count > 0)
+                                        {
+                                            @foreach (var card in CorrectCardsDealer)
+                                            {
+                                                <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                    <MudImage Class="game-card" Width="120" Height="170" Src="@card.Picture"></MudImage>
+                                                </MudPaper>
+                                            }
+                                        }
+                                    </MudPaper>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-3 transparentPaper">
+                                    @if (ChosenCardDealer != null && !string.IsNullOrEmpty(ChosenCardDealer.Type) && !string.IsNullOrEmpty(ChosenCardDealer.Picture))
+                                    {
+                                        <MudImage Class="game-card" Width="130" Height="170" Src="@ChosenCardDealer.Picture"></MudImage>
+                                    }
+                                    else
+                                    {
+                                        <MudImage Class="game-card" Width="130" Height="170" Src="/GamesComponents/PandoraComponents/PandoraCardBack.png"></MudImage>
+                                    }
+                                </MudPaper>
+
+                                <MudDivider Class="game-divider" />
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-3 transparentPaper">
+                                    <MudChip Color="Color.Error" Class="score-chip" T="string">Guess card:</MudChip>
+                                    @if (!string.IsNullOrEmpty(RandomPickedCard.Picture))
+                                    {
+                                        <MudImage Class="game-card" Width="130" Height="170" Src="@RandomPickedCard.Picture"></MudImage>
+                                    }
+                                    else
+                                    {
+                                        <MudImage Class="game-card" Width="130" Height="170" Src="/GamesComponents/PandoraComponents/PandoraCardBack.png"></MudImage>
+                                    }
+                                </MudPaper>
+
+
+                                <MudDivider Class="game-divider" />
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-3 transparentPaper">
+                                    <MudChip Color="Color.Error" Class="score-chip" T="string">Your guessed cards:</MudChip>
+                                    <MudPaper Elevation="0" Style="min-height:120px" Class="d-flex flex-row justify-content-center align-items-center cards-container">
+                                        @if (CorrectCardsPlayer.Count > 0)
+                                        {
+                                            @foreach (var card in CorrectCardsPlayer)
+                                            {
+                                                <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                    <MudImage Class="game-card" Width="120" Height="170" Src="@card.Picture"></MudImage>
+                                                </MudPaper>
+                                            }
+                                        }
+                                    </MudPaper>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-3 transparentPaper">
+                                    @if (ShownListCards.Count > 1)
+                                    {
+                                        @foreach (var card in ShownListCards)
+                                        {
+                                            <MudPaper Elevation="0" Class="d-flex flex-column mx-1 align-items-center transparentPaper">
+                                                <MudImage @onclick="() => ChooseCard(card.Type)" Class="playerCards" Width="130" Height="170" Src="@card.Picture"></MudImage>
+                                                <MudText Class="card-text">@card.Type</MudText>
+                                            </MudPaper>
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudButton Class="game-button" Disabled="@(!_playAgain)" @onclick="GameReset">Play again</MudButton>
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                            }
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudHidden>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int gameProgressionLevel = 9;
+    private int currentLevel = 8;
+    private int _gameBet = 1000;
+    private bool _playAgain = true;
+    private bool _playGame = false;
+    private bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "Let's play, darling. Just try not to fall for the obvious traps.";
+    private string _gameSessionToken;
+
+    private PandoraCardsDTO ChosenCardPlayer = new();
+    private PandoraCardsDTO ChosenCardDealer = new();
+    private PandoraCardsDTO RandomPickedCard = new();
+
+    private List<PandoraCardsDTO> ListCards = new();
+    private List<PandoraCardsDTO> ShownListCards = new();
+    private List<PandoraCardsDTO> CorrectCardsPlayer = new();
+    private List<PandoraCardsDTO> CorrectCardsDealer = new();
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Fraud");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _demonMessage = "Let's play, darling. Just try not to fall for the obvious traps.";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+
+        if (UserModel.Level >= 8)
+            await AllCards();
+    }
+
+    public async void PlayGame()
+    {
+        _playGame = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task AllCards()
+    {
+        _playAgain = false;
+        ListCards = await PandoraService.GetPandoraCardsAsync();
+        ShownListCards = ListCards.GroupBy(card => card.Type).Select(group => group.First()).ToList();
+        ShownListCards.RemoveAll(x => x.Type == "Hope");
+    }
+
+    public async Task ChooseCard(string cardType)
+    {
+        Random randnom = new Random();
+        int cardDealerNumber = randnom.Next(0, ShownListCards.Count);
+        ChosenCardDealer = ShownListCards[cardDealerNumber];
+
+        int numberCard = randnom.Next(0, ListCards.Count);
+        RandomPickedCard = ListCards[numberCard];
+
+        if (RandomPickedCard.Type == "Hope")
+        {
+            await Hope();
+        }
+        else
+        {
+            if (RandomPickedCard.Type == cardType && ChosenCardDealer.Type != RandomPickedCard.Type)
+            {
+                ListCards.RemoveAll(x => x.Type == RandomPickedCard.Type);
+                ShownListCards.RemoveAll(x => x.Type == RandomPickedCard.Type);
+                CorrectCardsPlayer.Add(RandomPickedCard);
+
+                ChosenCardPlayer = RandomPickedCard;
+                Snackbar.Add("You guessed the card right", Severity.Success);
+                _demonMessage = "Oh, you won this one? How unexpectedly charming.";
+                await Task.Delay(1000);
+                StateHasChanged();
+            }
+            else if (RandomPickedCard.Type == cardType && ChosenCardDealer.Type == RandomPickedCard.Type)
+            {
+                Snackbar.Add("Both players are correct, game resets", Severity.Info);
+                _demonMessage = "Such symmetry… I suppose fate wants a rematch.";
+                await Task.Delay(1000);
+                await Reset();
+            }
+
+            else if (RandomPickedCard.Type != cardType && ChosenCardDealer.Type == RandomPickedCard.Type)
+            {
+                ListCards.RemoveAll(x => x.Type == RandomPickedCard.Type);
+
+                ShownListCards.RemoveAll(x => x.Type == RandomPickedCard.Type);
+
+                CorrectCardsDealer.Add(RandomPickedCard);
+
+                Snackbar.Add("Dealer guessed the right card", Severity.Error);
+                _demonMessage = "I won this dance, darling. Let's see how long you can keep up.";
+                await Task.Delay(1000);
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add("No correct guesses");
+                _demonMessage = "A miss on both sides? How utterly dull.";
+            }
+            await Task.Delay(2000);
+            await Reset();
+        }
+    }
+
+    public async Task Reset()
+    {
+        if (ShownListCards.Count < 2)
+        {
+            if (CorrectCardsPlayer.Count > CorrectCardsDealer.Count)
+            {
+                Snackbar.Add("You won the game!");
+                _demonMessage = "You outwitted me..impressive. But now He knows your name.";
+                await Task.Delay(1000);
+                UserModel.PandoraGameControl = UserModel.PandoraGameControl + 1;
+                if (UserModel.PandoraGameControl == 6)
+                {
+                    //User won the game for the first time, achivement
+                    if (UserModel.Level == 6)
+                    {
+                        Snackbar.Add("Snackbar with a custom icon, color and size.", Severity.Info, config =>
+                           {
+                               config.Icon = Icons.Custom.Brands.GitHub;
+                               config.IconColor = Color.Warning;
+                               config.IconSize = Size.Large;
+                           });
+                        await TransactionService.GameWonTransaction(_id, _gameBet, gameProgressionLevel, "Fraud", _gameSessionToken);
+                        await TransactionService.PandoraGameControlReset(_id);
+                        StateHasChanged();
+                        await Task.Delay(1000);
+                        NavigationManager.NavigateTo("/satan");
+                        return;
+                    }
+
+                    await TransactionService.GameWonTransaction(_id, _gameBet, gameProgressionLevel, "Fraud", _gameSessionToken);
+                    await TransactionService.PandoraGameControlReset(_id);
+                    _playAgain = false;
+                    StateHasChanged();
+                    return;
+                }
+                else
+                {
+                    await TransactionService.PandoraGameControlWon(_id);
+                    StateHasChanged();
+                    return;
+                }
+            }
+            else if (CorrectCardsPlayer.Count < CorrectCardsDealer.Count)
+            {
+                Snackbar.Add("End of round! Lilim won");
+                UserModel.PandoraGameControl = UserModel.PandoraGameControl - 1;
+                _demonMessage = "So close. So confident. So utterly fooled.";
+
+                if (UserModel.PandoraGameControl == 0)
+                {
+                    Snackbar.Add("Lilim won the game! Liar's Kiss activates!");
+                    _demonMessage = "Did you really think you had me? Oh, sweetie… I let you think that.";
+                    //Flow Service back to 3
+                    await TransactionService.PandoraGameControlReset(_id);
+                    //Liar's Kiss - Lilim's special ability
+                    await TransactionService.LostToLilim(_id);
+                    NavMenuState.RefreshNavMenu();
+                    StateHasChanged();
+                    return;
+                }
+                else
+                {
+                    Snackbar.Add("Flow umanjen");
+                    await TransactionService.PandoraGameControlLost(_id);
+                    _playAgain = false;
+                    NavMenuState.RefreshNavMenu();
+                    StateHasChanged();
+                    return;
+                }
+            }
+            else if (CorrectCardsPlayer.Count == CorrectCardsDealer.Count)
+            {
+                _demonMessage = "We both walked the edge. Pity you didn't fall—yet.";
+                Snackbar.Add("End of the round! Score is draw");
+                await TransactionService.GameWonTransaction(_id, _gameBet / 2, currentLevel, "Fraud", _gameSessionToken);
+            }
+            _playAgain = true;
+        }
+
+        RandomPickedCard = new();
+        ChosenCardPlayer = new();
+        ChosenCardDealer = new();
+        _demonMessage = "Let's play, darling. Just try not to fall for the obvious traps.";
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task Hope()
+    {
+        RandomPickedCard = new();
+        ChosenCardPlayer = new();
+        ChosenCardDealer = new();
+        CorrectCardsPlayer.Clear();
+        CorrectCardsDealer.Clear();
+        ShownListCards.Clear();
+        _demonMessage = "Hope? Oh sweetie, that's my favorite lie.";
+        _playAgain = true;
+        Snackbar.Add("Hope is restored, you lost!");
+        await GameReset();
+    }
+
+    public async Task GameReset()
+    {
+        RandomPickedCard = new();
+        ChosenCardPlayer = new();
+        ChosenCardDealer = new();
+
+        CorrectCardsPlayer.Clear();
+        CorrectCardsDealer.Clear();
+        ShownListCards.Clear();
+        _demonMessage = "Let's play, darling. Just try not to fall for the obvious traps.";
+        await AllCards();
+        _playGame = false;
+    }
+}

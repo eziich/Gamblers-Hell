@@ -1,0 +1,213 @@
+﻿@page "/rulers"
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Models
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Rulers @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .rulers-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .content-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        margin-bottom: 2rem;
+    }
+
+    .inner-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+        padding: 1.5rem;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+    }
+
+    .subtitle-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
+        letter-spacing: 1px;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    .emphasis-text {
+        color: #ff9999;
+        font-weight: bold;
+    }
+
+    .data-grid-style {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .grid-header {
+        background-color: #1a0000;
+        color: #ff9999;
+        font-family: 'Cinzel', serif;
+        font-weight: bold;
+    }
+
+    .grid-cell {
+        background-color: #000000;
+        color: #ff9999;
+        border-bottom: 1px solid #3d0000;
+    }
+
+    .icon-glow {
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.8));
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0)
+    {
+        <VerificationNotificationComponent />
+    }
+
+    <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-4">
+        <div class="rulers-container mb-4">
+            <MudText Typo="Typo.h2" Style="color:#ff9999" Class="mb-3 d-flex justify-content-center align-content-center title-text">RULERS OF HELL</MudText>
+        </div>
+
+        <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex flex-column align-items-center align-content-center justify-content-center my-4">
+            <!--Ultimate Ruler-->
+            <MudCard Class="content-card d-flex flex-column align-items-center align-content-center justify-content-center pa-2" Style="background-color:#ff9999; width: 100%;">
+                <MudCard Class="inner-card pa-4" Style="width: 100%;">
+                    <MudContainer Class="mb-4 d-flex flex-row justify-content-center align-content-center align-items-center">
+                        <MudText Typo="Typo.h4" Style="color:#ff9999" Class="d-flex justify-content-center align-content-center subtitle-text">Ultimate Ruler</MudText>
+                        <MudIcon Size="Size.Large" Style="color:#ff9999" Icon="@Icons.Custom.Uncategorized.ChessKing" Class="ml-2 icon-glow"></MudIcon>
+                    </MudContainer>
+
+                    <MudDataGrid Items="@SingleRulerList" Class="data-grid-style" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+                        <Columns>
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Username" Title="Username" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.FirstName" Title="First Name" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.LastName" Title="Last Name" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Email" Title="Email" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Balance" Title="Current Balance" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.BalanceAfterWin" Title="Balance After Winning Gambler's Hell" />
+                        </Columns>
+                    </MudDataGrid>
+                </MudCard>
+            </MudCard>
+
+            <!--Rulers-->
+            <MudCard Class="content-card d-flex flex-column align-items-center align-content-center justify-content-center pa-2" Style="background-color:#ff9999; width: 100%;">
+                <MudCard Class="inner-card pa-4" Style="width: 100%;">
+                    <MudContainer Class="mb-4 d-flex flex-row justify-content-center align-content-center align-items-center">
+                        <MudText Typo="Typo.h5" Style="color:#ff9999" Class="d-flex justify-content-center align-content-center subtitle-text">Rulers</MudText>
+                        <MudIcon Size="Size.Medium" Style="color:#ff9999" Icon="@Icons.Custom.Uncategorized.ChessQueen" Class="ml-2 icon-glow"></MudIcon>
+                    </MudContainer>
+
+                    <MudDataGrid Items="@TopFiveRulersList" Class="data-grid-style" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+                        <Columns>
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Username" Title="Username" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.FirstName" Title="First Name" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.LastName" Title="Last Name" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Email" Title="Email" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.Balance" Title="Current Balance" />
+                            <PropertyColumn CellStyle="background-color:#000000; color:#ff9999; border-bottom: 1px solid #3d0000;" HeaderStyle="background-color:#1a0000; color:#ff9999; font-family: 'Cinzel', serif; font-weight: bold;" Property="x => x.BalanceAfterWin" Title="Balance After Winning Gambler's Hell" />
+                        </Columns>
+                    </MudDataGrid>
+                </MudCard>
+            </MudCard>
+        </MudContainer>
+
+        <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+            <PageFooter />
+        </MudItem>
+    </MudItem>
+}
+
+@code {
+
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private bool _pageLoading = true;
+
+    private UserDTO UserModel { get; set; } = new();
+    public List<TopFifteenRulersDTO> TopFiveRulersList = new List<TopFifteenRulersDTO>();
+    public TopFifteenRulersDTO UltimateRuler = new TopFifteenRulersDTO();
+    public List<TopFifteenRulersDTO> SingleRulerList = new List<TopFifteenRulersDTO>();
+
+    // OnInitialized method to fetch data for rulers
+    protected override async void OnInitialized()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        try
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID))?.Value);
+                _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+
+                TopFiveRulersList = await UserService.TopFifteenRulers();
+
+                UltimateRuler = await UserService.UltimateRuler();
+                SingleRulerList = new List<TopFifteenRulersDTO> { UltimateRuler };
+
+                try
+                {
+                    UserModel = await UserService.GetUserByID(_id);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                _id = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        _pageLoading = false;
+        StateHasChanged();
+    }
+}

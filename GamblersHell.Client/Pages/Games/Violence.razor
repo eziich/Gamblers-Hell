@@ -1,0 +1,1296 @@
+﻿@page "/violence"
+@using GamblersHell.Models
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Shared;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject PokerService PokerClient
+@inject HttpClient HttpClient
+@inject UserService UserService
+@inject TransactionService TransactionService
+@inject NavMenuState NavMenuState
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Violence @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #ff9999 !important;
+    }
+
+    .game-card {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        border-radius: 8px;
+    }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6));
+    }
+
+    .game-button {
+        background-color: #3d0000 !important;
+        color: #ff9999 !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ff5555 !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #5d0000 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #ff0000, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    }
+
+    .score-chip {
+        background-color: #3d0000 !important;
+        border: 1px solid #ff5555 !important;
+        color: #ff9999 !important;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        font-family: 'Cinzel', serif;
+    }
+
+    .score-avatar {
+        background-color: #3d0000 !important;
+        border: 1px solid #ff5555 !important;
+        color: #ff9999 !important;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        font-weight: bold;
+    }
+
+    .cards-container {
+        background: rgba(10, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .card-text {
+        font-family: 'Cinzel', serif;
+        color: #ff9999 !important;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 7)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+        @*Mobile Version*@
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                        <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                            <MudText Class="title-text pulse-glow" Typo="Typo.h4">Poker</MudText>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                            <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#3d0000 !important" Arrow="true">
+                                <MudImage Class="demon" Src="Demons/Violence.png" Width="200" Height="200"></MudImage>
+                            </MudTooltip>
+                        </MudPaper>
+
+                        @if (_playGame)
+                        {
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 transparentPaper">
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Flow: @UserModel.PokerGameControl</MudChip>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center flex-row my-2 transparentPaper">
+                                @if (!_showDealerCards)
+                                {
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                }
+                                else
+                                {
+                                    <MudImage Class="game-card" Src=@CardsDealer[0].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card" Src=@CardsDealer[1].Picture Width="80" Height="100" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Style="min-height:100px" Class="d-flex flex-wrap flex-row justify-content-center align-items-center cards-container">
+                                @if (AllCardsList.Count == 3)
+                                {
+                                    <MudImage Class="game-card mr-1" Src=@AllCardsList[0].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[1].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[2].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                    <MudImage Class="game-card ml-1" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                }
+                                else if (AllCardsList.Count == 5)
+                                {
+                                    <MudImage Class="game-card mr-1" Src=@AllCardsList[0].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[1].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[2].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[3].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card ml-1" Src=@AllCardsList[4].Picture Width="80" Height="100" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center flex-row my-2 transparentPaper">
+                                @if (CardsPlayer.Count < 2 || string.IsNullOrEmpty(CardsPlayer[0].Picture) || string.IsNullOrEmpty(CardsPlayer[1].Picture))
+                                {
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="80" Height="100" />
+                                }
+                                else
+                                {
+                                    <MudImage Class="game-card" Src=@CardsPlayer[0].Picture Width="80" Height="100" />
+                                    <MudImage Class="game-card" Src=@CardsPlayer[1].Picture Width="80" Height="100" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center transparentPaper">
+                                @if (_gameBet > 0)
+                                {
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="FoldPlayer">Fold</MudButton>
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="FinalDraw">Call</MudButton>
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="RaisePlayer">Raise</MudButton>
+                                    <MudButton Class="game-button mx-1" OnClick="OpenOverlay">
+                                        <MudIcon Icon="@Icons.Material.Filled.PermDeviceInformation"></MudIcon>
+                                    </MudButton>
+                                    <MudOverlay @bind-Visible="_visible" DarkBackground AutoClose="true" OnClosed="OnOverlayClosed">
+                                        <MudImage Style="max-width:350px;max-height:400px" Src="/GamesComponents/PokerComponents/PokerCombinations.png"></MudImage>
+                                    </MudOverlay>
+                                }
+                                else
+                                {
+                                    <MudButton Class="game-button mx-1" @onclick=DrawAgain>Play again</MudButton>
+                                    <MudButton @onclick="() => GoBackAndChangeBet()" Class="game-button mx-1" Variant="Variant.Filled">Go back and change Bet</MudButton>
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 transparentPaper">
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Your balance: @UserModel.Balance</MudChip>
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Your bet: @_gameBet$</MudChip>
+                            </MudPaper>
+                        }
+                        else
+                        {
+                            <MudButton Class="game-button my-1" Disabled="UserModel.Balance < _gameBet" @onclick="() => PlayGame()">Play</MudButton>
+                            <MudButton @onclick="SetBet" Class="game-button my-1" Variant="Variant.Filled">Change Bet</MudButton>
+                            <MudChip T="int" Class="score-chip my-1">Current bet: @_gameBet$</MudChip>
+                            <MudChip T="int" Class="score-chip my-1">Flow: @UserModel.PokerGameControl</MudChip>
+                        }
+
+                    </MudContainer>
+                </MudItem>
+            </MudGrid>
+        </MudHidden>
+
+        @*PC Version*@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                        <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                            <MudText Class="title-text pulse-glow" Typo="Typo.h3">Poker</MudText>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                            <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#3d0000 !important" Arrow="true">
+                                <MudImage Class="demon" Src="Demons/Violence.png" Width="250" Height="250"></MudImage>
+                            </MudTooltip>
+                        </MudPaper>
+
+                        @if (_playGame)
+                        {
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 transparentPaper">
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Flow: @UserModel.PokerGameControl</MudChip>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center flex-row my-2 transparentPaper">
+                                @if (!_showDealerCards)
+                                {
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                }
+                                else
+                                {
+                                    <MudImage Class="game-card" Src=@CardsDealer[0].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card" Src=@CardsDealer[1].Picture Width="130" Height="170" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Style="min-height:170px" Class="d-flex flex-wrap flex-row justify-content-center align-items-center cards-container">
+                                @if (AllCardsList.Count == 3)
+                                {
+                                    <MudImage Class="game-card mr-1" Src=@AllCardsList[0].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[1].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[2].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                    <MudImage Class="game-card ml-1" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                }
+                                else if (AllCardsList.Count == 5)
+                                {
+                                    <MudImage Class="game-card mr-1" Src=@AllCardsList[0].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[1].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[2].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card mx-1" Src=@AllCardsList[3].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card ml-1" Src=@AllCardsList[4].Picture Width="130" Height="170" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center flex-row my-2 transparentPaper">
+                                @if (CardsPlayer.Count < 2 || string.IsNullOrEmpty(CardsPlayer[0].Picture) || string.IsNullOrEmpty(CardsPlayer[1].Picture))
+                                {
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                    <MudImage Class="game-card" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg" Width="130" Height="170" />
+                                }
+                                else
+                                {
+                                    <MudImage Class="game-card" Src=@CardsPlayer[0].Picture Width="130" Height="170" />
+                                    <MudImage Class="game-card" Src=@CardsPlayer[1].Picture Width="130" Height="170" />
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center transparentPaper">
+                                @if (!_showDealerCards)
+                                {
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="FoldPlayer">Fold</MudButton>
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="FinalDraw">Call</MudButton>
+                                    <MudButton Class="game-button mx-1" Disabled="_showDealerCards == true" @onclick="RaisePlayer">Raise</MudButton>
+                                    <MudButton Class="game-button mx-1" OnClick="OpenOverlay">
+                                        <MudIcon Icon="@Icons.Material.Filled.PermDeviceInformation"></MudIcon>
+                                    </MudButton>
+                                    <MudOverlay @bind-Visible="_visible" DarkBackground AutoClose="true" OnClosed="OnOverlayClosed">
+                                        <MudImage Style="max-width:600px;max-height:700px" Src="/GamesComponents/PokerComponents/PokerCombinations.png"></MudImage>
+                                    </MudOverlay>
+                                }
+                                else
+                                {
+                                    <MudButton Class="game-button mx-1" @onclick=DrawAgain>Play again</MudButton>
+                                    <MudButton @onclick="() => GoBackAndChangeBet()" Class="game-button mx-1" Variant="Variant.Filled">Go back and change Bet</MudButton>
+                                }
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 transparentPaper">
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Your balance: @UserModel.Balance</MudChip>
+                                <MudChip Color="Color.Error" Class="score-chip" T="int">Your bet: @_gameBet$</MudChip>
+                            </MudPaper>
+                        }
+                        else
+                        {
+                            <MudButton Class="game-button my-1" Disabled="UserModel.Balance < _gameBet" @onclick="() => PlayGame()">Play</MudButton>
+                            <MudButton @onclick="SetBet" Class="game-button my-1" Variant="Variant.Filled">Change Bet</MudButton>
+                            <MudChip T="int" Class="score-chip my-1">Current bet: @_gameBet$</MudChip>
+                            <MudChip T="int" Class="score-chip my-1">Flow: @UserModel.PokerGameControl</MudChip>
+                        }
+
+                    </MudContainer>
+                </MudItem>
+            </MudGrid>
+        </MudHidden>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _currentLevel = 7;
+    private int _gameProgressionLevel = 8;
+    private int _gameBet = 50;
+    private int _tempValueBet = 0;
+    private int _betDealer = 0;
+    private int _pointsPlayer = 0;
+    private int _pointsDealer = 0;
+    private bool _showDealerCards = false;
+    private bool _visible;
+    private bool _playGame = false;
+    private bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "Every bluff costs a bone. Still want to play?";
+    private string _gameSessionToken;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private List<PokerCardsDTO> AllCardsList = new();
+    private List<PokerCardsDTO> CardsDealer = new();
+    private List<PokerCardsDTO> CardsDealerEndgame = new();
+    private List<PokerCardsDTO> CardsPlayer = new();
+    private List<PokerCardsDTO> CardsPlayerEndgame = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Violence");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "Every bluff costs a bone. Still want to play?";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+    }
+
+    public async void PlayGame()
+    {
+        _playGame = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        await FirstDraw();
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+        _tempValueBet = _gameBet;
+    }
+
+    public async void OpenOverlay()
+    {
+        _visible = true;
+        StateHasChanged();
+        // await Task.Delay(3000);
+        // await OnOverlayClosed();
+    }
+
+    public async Task OnOverlayClosed()
+    {
+        _visible = false;
+        StateHasChanged();
+        // Snackbar.Add("Random message", Severity.Normal);
+    }
+
+    private async void FoldPlayer()
+    {
+        _showDealerCards = true;
+        UserModel.PokerGameControl = UserModel.PokerGameControl - 1;
+        await TransactionService.PokerGameControlLost(_id);
+        _demonMessage = "COWARD!";
+        if (UserModel.PokerGameControl == 0)
+        {
+            //Return value to 5 of flow
+            await TransactionService.PokerGameControlReset(_id);
+            _demonMessage = "Die!!";
+            //Expel service - Baal's special ability
+            await TransactionService.LostToBaal(_id);
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+            NavigationManager.NavigateTo("/games");
+            return;
+        }
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    private async Task RaisePlayer()
+    {
+        _gameBet *= 2;
+        await FinalDraw();
+    }
+
+    private void CallDealer()
+    {
+        // Dealer calls by matching the player's bet (ulogIgrac)
+        _betDealer = _gameBet;
+        Snackbar.Add($"Dealer calls with a bet of {_gameBet}.", Severity.Info);
+    }
+
+    private void RaiseDealer()
+    {
+        // Dealer raises by increasing the bet
+        int raiseAmount = _gameBet * 2;  // Example: double the current bet
+        _betDealer = raiseAmount;
+        Snackbar.Add($"Dealer raises with a bet of {raiseAmount}.", Severity.Info);
+        _demonMessage = "You afraid? You should be!";
+    }
+
+    private async void FoldDealer()
+    {
+        _showDealerCards = true;
+        UserModel.PokerGameControl = UserModel.PokerGameControl + 1;
+        await TransactionService.PokerGameControlWon(_id);
+        if (UserModel.PokerGameControl == 10)
+        {
+            if (UserModel.Level == _currentLevel)
+            {
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Violence", _gameSessionToken);
+                Snackbar.Add("You've bested the demon general at his own game of bluffs, but beware—soon, the beautiful deceit you once encountered will face you eye to eye. Lilim awaits.", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                await TransactionService.PokerGameControlReset(_id);
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                NavigationManager.NavigateTo("/lilim");
+                return;
+            }
+            await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Violence", _gameSessionToken);
+            await TransactionService.PokerGameControlReset(_id);
+            _demonMessage = "Even in defeat, I see red. Pray we don't meet again.";
+            Snackbar.Add("You won the game!", Severity.Success);
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+            NavigationManager.NavigateTo("/lilim");
+            return;
+        }
+        else
+        {
+            await TransactionService.GameWonTransaction(_id, _gameBet, _currentLevel, "Violence", _gameSessionToken);
+        }
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task PlayerDraw()
+    {
+        while (CardsPlayer.Count < 2)
+        {
+            try
+            {
+                var fetchedCard = await PokerClient.GetRandomCardAsync();
+
+                bool playerDrawnCard = CardsPlayer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit);
+
+                if (!playerDrawnCard)
+                {
+                    CardsPlayer.Add(fetchedCard);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Error: {e.Message}", Severity.Error);
+                break;
+            }
+        }
+    }
+
+
+    public async Task DealerDraw()
+    {
+        while (CardsDealer.Count < 2)
+        {
+            try
+            {
+                var fetchedCard = await PokerClient.GetRandomCardAsync();
+
+                bool dealerDrawnCard = CardsDealer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit)
+                                || CardsPlayer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit);
+
+                if (!dealerDrawnCard)
+                {
+                    CardsDealer.Add(fetchedCard);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Error: {e.Message}", Severity.Error);
+                break;
+            }
+        }
+        DealerDecision();
+    }
+
+    public async Task FirstDraw()
+    {
+        while (AllCardsList.Count < 3)
+        {
+            try
+            {
+                var fetchedCard = await PokerClient.GetRandomCardAsync();
+
+                bool drawnCard = AllCardsList.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit)
+                                || CardsDealer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit)
+                                || CardsPlayer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit);
+
+                if (!drawnCard)
+                {
+                    AllCardsList.Add(fetchedCard);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Error: {e.Message}", Severity.Error);
+                break;
+            }
+        }
+        await PlayerDraw();
+        await DealerDraw();
+        StateHasChanged();
+    }
+
+    public async Task FinalDraw()
+    {
+        while (AllCardsList.Count < 5)
+        {
+            try
+            {
+                var fetchedCard = await PokerClient.GetRandomCardAsync();
+
+                bool kartaIzvucena = AllCardsList.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit)
+                                || CardsDealer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit)
+                                || CardsPlayer.Any(c => c.Number == fetchedCard.Number && c.Suit == fetchedCard.Suit);
+
+                if (!kartaIzvucena)
+                {
+                    AllCardsList.Add(fetchedCard);
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Error: {e.Message}", Severity.Error);
+                break;
+            }
+        }
+
+        CardsDealerEndgame = CardsDealer.Concat(AllCardsList).ToList();
+        CardsPlayerEndgame = CardsPlayer.Concat(AllCardsList).ToList();
+
+        await DetermineWinner();
+    }
+
+
+    public void CombinationsPokerPlayer()
+    {
+        // Define the rank order for a straight
+        var rankOrder = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+
+        // Group the cards by suit and rank for easier access
+        var groupedBySuit = CardsPlayerEndgame.GroupBy(card => card.Suit).ToList();
+        var groupedByRank = CardsPlayerEndgame.GroupBy(card => card.Number).ToList();
+
+        // Check for Royal Flush (specific case of Straight Flush)
+        bool RoyalFlush = groupedBySuit.Any(g => g.Count() == 5 && new[] { "10", "Jack", "Queen", "King", "Ace" }.All(rank => g.Select(card => card.Number).Contains(rank))
+        );
+
+        if (RoyalFlush)
+        {
+            _pointsPlayer = 10;
+            Snackbar.Add("Player's combination: Royal Flush");
+            return;
+        }
+
+        // Check for Straight Flush
+        bool StraightFlush = groupedBySuit.Any(g =>
+        {
+            if (g.Count() != 5)
+                return false;
+
+            var handRanks = g.Select(card => card.Number).ToList();
+            var rankIndexes = handRanks.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+            // Handle Ace-low straight (A, 2, 3, 4, 5)
+            if (rankIndexes.Contains(12) && rankIndexes.Contains(0) && rankIndexes.Count == 5)
+            {
+                rankIndexes.Remove(12);
+                rankIndexes.Add(0);
+                rankIndexes = rankIndexes.OrderBy(index => index).ToList();
+            }
+
+            // Check if the hand is a straight (consecutive ranks)
+            for (int i = 1; i < rankIndexes.Count; i++)
+            {
+                if (rankIndexes[i] != rankIndexes[i - 1] + 1)
+                    return false;
+            }
+            return true;
+        });
+
+        if (StraightFlush)
+        {
+            _pointsPlayer = 9;
+            Snackbar.Add("Player's combination: Straight Flush");
+            return;
+        }
+
+        // Check for Four of a Kind
+        bool FourOfAKind = groupedByRank.Any(g => g.Count() == 4);
+        if (FourOfAKind)
+        {
+            _pointsPlayer = 8;
+            Snackbar.Add("Player's combination: Four of a Kind");
+            return;
+        }
+
+        // Check for Full House
+        bool FullHouse = groupedByRank.Any(g => g.Count() == 3) && groupedByRank.Any(x => x.Count() == 2);
+        if (FullHouse)
+        {
+            _pointsPlayer = 7;
+            Snackbar.Add("Player's combination: Full House");
+            return;
+        }
+
+        // Check for Flush
+        bool Flush = groupedBySuit.Any(g => g.Count() == 5);
+        if (Flush)
+        {
+            _pointsPlayer = 6;
+            Snackbar.Add("Player's combination: Flush");
+            return;
+        }
+
+        // Check for Straight
+        var handRanksList = CardsPlayerEndgame.Select(card => card.Number).Distinct().ToList(); // Make sure there are no duplicates
+        var rankIndexesForStraight = handRanksList.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+        // Handle Ace-low straight (A, 2, 3, 4, 5)
+        if (rankIndexesForStraight.Contains(12) && rankIndexesForStraight.Contains(0) && rankIndexesForStraight.Count == 5)
+        {
+            // Remove the Ace (12) and add it as the low Ace (0)
+            rankIndexesForStraight.Remove(12);
+            rankIndexesForStraight.Add(0);
+            rankIndexesForStraight = rankIndexesForStraight.OrderBy(index => index).ToList();
+        }
+
+        // Check if the hand contains consecutive ranks (Straight)
+        bool isStraight = true;
+        for (int i = 1; i < rankIndexesForStraight.Count; i++)
+        {
+            if (rankIndexesForStraight[i] != rankIndexesForStraight[i - 1] + 1)
+            {
+                isStraight = false;
+                break;
+            }
+        }
+
+        if (isStraight)
+        {
+            _pointsPlayer = 5;
+            Snackbar.Add("Player's combination: Straight");
+            return;
+        }
+
+        // Check for Three of a Kind
+        bool ThreeOfAKind = groupedByRank.Any(g => g.Count() == 3);
+        if (ThreeOfAKind)
+        {
+            _pointsPlayer = 4;
+            Snackbar.Add("Player's combination: Three of a Kind");
+            return;
+        }
+
+        // Check for Two Pair's
+        bool TwoPair = groupedByRank.Count(g => g.Count() == 2) == 2;
+        if (TwoPair)
+        {
+            _pointsPlayer = 3;
+            Snackbar.Add("Player's combination: Two Pair's");
+            return;
+        }
+
+
+        // Check for Pair
+        bool Pair = groupedByRank.Any(g => g.Count() == 2);
+        if (Pair)
+        {
+            _pointsPlayer = 2;
+            Snackbar.Add("Player's combination: Pair");
+            return;
+        }
+
+        _pointsPlayer = 1;
+        var highestCard = CardsPlayerEndgame.OrderByDescending(card => Array.IndexOf(rankOrder, card.Number)).First();
+        Snackbar.Add($"Player's combination: High Card: {highestCard.Number}");
+    }
+
+
+    public void CombinationsPokerDealer()
+    {
+        // Define the rank order for a straight
+        var rankOrder = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+
+        // Group the cards by suit and rank for easier access
+        var groupedBySuit = CardsDealerEndgame.GroupBy(card => card.Suit).ToList();
+        var groupedByRank = CardsDealerEndgame.GroupBy(card => card.Number).ToList();
+
+        // Check for Royal Flush (specific case of Straight Flush)
+        bool RoyalFlush = groupedBySuit.Any(g => g.Count() == 5 && new[] { "10", "Jack", "Queen", "King", "Ace" }.All(rank => g.Select(card => card.Number).Contains(rank))
+        );
+
+        if (RoyalFlush)
+        {
+            _pointsDealer = 10;
+            Snackbar.Add("Dealer's combination: Royal Flush");
+            return;
+        }
+
+        // Check for Straight Flush
+        bool StraightFlush = groupedBySuit.Any(g =>
+        {
+            if (g.Count() != 5)
+                return false;
+
+            var handRanks = g.Select(card => card.Number).ToList();
+            var rankIndexes = handRanks.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+            // Handle Ace-low straight (A, 2, 3, 4, 5)
+            if (rankIndexes.Contains(12) && rankIndexes.Contains(0) && rankIndexes.Count == 5)
+            {
+                rankIndexes.Remove(12);
+                rankIndexes.Add(0);
+                rankIndexes = rankIndexes.OrderBy(index => index).ToList();
+            }
+
+            // Check if the hand is a straight (consecutive ranks)
+            for (int i = 1; i < rankIndexes.Count; i++)
+            {
+                if (rankIndexes[i] != rankIndexes[i - 1] + 1)
+                    return false;
+            }
+            return true;
+        });
+
+        if (StraightFlush)
+        {
+            _pointsDealer = 9;
+            Snackbar.Add("Dealer's combination: Straight Flush");
+            return;
+        }
+
+        // Check for Four of a Kind
+        bool FourOfAKind = groupedByRank.Any(g => g.Count() == 4);
+        if (FourOfAKind)
+        {
+            _pointsDealer = 8;
+            Snackbar.Add("Dealer's combination: Four of a Kind");
+            return;
+        }
+
+        // Check for Full House
+        bool FullHouse = groupedByRank.Any(g => g.Count() == 3) && groupedByRank.Any(x => x.Count() == 2);
+        if (FullHouse)
+        {
+            _pointsDealer = 7;
+            Snackbar.Add("Dealer's combination: Full House");
+            return;
+        }
+
+        // Check for Flush
+        bool Flush = groupedBySuit.Any(g => g.Count() == 5);
+        if (Flush)
+        {
+            _pointsDealer = 6;
+            Snackbar.Add("Dealer's combination: Flush");
+            return;
+        }
+
+        // Check for Straight
+        var handRanksList = CardsDealerEndgame.Select(card => card.Number).Distinct().ToList(); // Make sure there are no duplicates
+        var rankIndexesForStraight = handRanksList.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+        // Handle Ace-low straight (A, 2, 3, 4, 5)
+        if (rankIndexesForStraight.Contains(12) && rankIndexesForStraight.Contains(0) && rankIndexesForStraight.Count == 5)
+        {
+            // Remove the Ace (12) and add it as the low Ace (0)
+            rankIndexesForStraight.Remove(12);
+            rankIndexesForStraight.Add(0);
+            rankIndexesForStraight = rankIndexesForStraight.OrderBy(index => index).ToList();
+        }
+
+        // Check if the hand contains consecutive ranks (Straight)
+        bool isDealerStraight = true;
+        for (int i = 1; i < rankIndexesForStraight.Count; i++)
+        {
+            if (rankIndexesForStraight[i] != rankIndexesForStraight[i - 1] + 1)
+            {
+                isDealerStraight = false;
+                break;
+            }
+        }
+
+        if (isDealerStraight)
+        {
+            _pointsDealer = 5;
+            Snackbar.Add("Dealer's combination: Straight");
+            return;
+        }
+
+        // Check for Three of a Kind
+        bool ThreeOfAKind = groupedByRank.Any(g => g.Count() == 3);
+        if (ThreeOfAKind)
+        {
+            _pointsDealer = 4;
+            Snackbar.Add("Dealer's combination: Three of a Kind");
+            return;
+        }
+
+        // Check for Two Pair's
+        bool TwoPair = groupedByRank.Count(g => g.Count() == 2) == 2;
+        if (TwoPair)
+        {
+            _pointsDealer = 3;
+            Snackbar.Add("Dealer's combination: Two Pair's");
+            return;
+        }
+
+
+        // Check for Pair
+        bool Pair = groupedByRank.Any(g => g.Count() == 2);
+        if (Pair)
+        {
+            _pointsDealer = 2;
+            Snackbar.Add("Dealer's combination: Pair");
+            return;
+        }
+
+        _pointsDealer = 1;
+        var highestCard = CardsDealerEndgame.OrderByDescending(card => Array.IndexOf(rankOrder, card.Number)).First();
+        Snackbar.Add($"Dealer's High Card: {highestCard.Number}");
+    }
+
+    public async Task DetermineWinner()
+    {
+        if (_betDealer > _gameBet)
+        {
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+
+            var dialog = DialogService.Show<DealerRaiseComponent>("Simple Dialog", options);
+
+            var result = await dialog.Result;
+            if (result.Canceled)
+            {
+                FoldPlayer();
+                _gameBet = _tempValueBet;
+                return;
+            }
+            else
+            {
+                _gameBet = _betDealer;
+            }
+        }
+        if (_gameBet > _betDealer)
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(1, 5);
+
+            if (randomNumber == 2)
+            {
+                FoldDealer();
+                _gameBet = _tempValueBet;
+                return;
+            }
+            else
+            {
+                _betDealer = _gameBet;
+            }
+        }
+        if (_gameBet == _betDealer)
+        {
+            CombinationsPokerPlayer();
+            CombinationsPokerDealer();
+
+            var rankOrder = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+
+            // Compare the hand points)
+            if (_pointsPlayer > _pointsDealer)
+            {
+                try
+                {
+                    UserModel.PokerGameControl = UserModel.PokerGameControl + 1;
+                    await TransactionService.PokerGameControlWon(_id);
+                    await TransactionService.GameWonTransaction(_id, _gameBet, _currentLevel, "Violence", _gameSessionToken);
+                    Snackbar.Add("Player wins with a better combination!", Severity.Success);
+                    _demonMessage = "You've got the stronger hand? We'll see about that when I break one of your hands.";
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+            else if (_pointsPlayer < _pointsDealer)
+            {
+                try
+                {
+                    UserModel.PokerGameControl = UserModel.PokerGameControl - 1;
+                    await TransactionService.PokerGameControlLost(_id);
+                    Snackbar.Add("Dealer wins with a better combination!", Severity.Error);
+                    _demonMessage = "Weaker hand? Then you won't mind losing one.";
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+            else
+            {
+                // If hands are tied (same points), compare the highest card
+                var highestCardIgrac = CardsPlayerEndgame.OrderByDescending(card => Array.IndexOf(rankOrder, card.Number)).First();
+                var highestCardDealer = CardsDealerEndgame.OrderByDescending(card => Array.IndexOf(rankOrder, card.Number)).First();
+
+                if (Array.IndexOf(rankOrder, highestCardIgrac.Number) > Array.IndexOf(rankOrder, highestCardDealer.Number))
+                {
+                    try
+                    {
+                        UserModel.PokerGameControl = UserModel.PokerGameControl + 1;
+                        await TransactionService.PokerGameControlWon(_id);
+                        await TransactionService.GameWonTransaction(_id, _gameBet, _currentLevel, "Violence", _gameSessionToken);
+                        Snackbar.Add("Player wins with the highest card: " + highestCardIgrac.Number, Severity.Success);
+                        _demonMessage = "Lucky draw. But I've got worse ways to make you fold.";
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                }
+                else if (Array.IndexOf(rankOrder, highestCardIgrac.Number) < Array.IndexOf(rankOrder, highestCardDealer.Number))
+                {
+
+                    try
+                    {
+                        UserModel.PokerGameControl = UserModel.PokerGameControl - 1;
+                        await TransactionService.PokerGameControlLost(_id);
+                        Snackbar.Add("Dealer wins with the highest card: " + highestCardDealer.Number, Severity.Error);
+                        _demonMessage = "Higher card, higher power. You're mine to break now.";
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                }
+                else
+                {
+                    Snackbar.Add("It's a tie! Both have the same highest card: " + highestCardIgrac.Number);
+                    await TransactionService.GameWonTransaction(_id, _gameBet / 2, _currentLevel, "Violence", _gameSessionToken);
+                    _demonMessage = "You got lucky..this time..";
+                }
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+            }
+            ShowDealerCards();
+        }
+        else
+        {
+            Snackbar.Add("Error!");
+        }
+
+        await Task.Delay(3000);
+        _gameBet = _tempValueBet;
+
+        //GAME WON
+        if (UserModel.PokerGameControl == 10)
+        {
+            if (UserModel.Level == _currentLevel)
+            {
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Violence", _gameSessionToken);
+                await TransactionService.PokerGameControlReset(_id);
+                Snackbar.Add("You've bested the demon general at his own game of bluffs, but beware—soon, the beautiful deceit you once encountered will face you eye to eye. Lilim awaits.", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                NavigationManager.NavigateTo("/lilim");
+                return;
+            }
+            await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Violence", _gameSessionToken);
+            await TransactionService.PokerGameControlReset(_id);
+            Snackbar.Add("You won the game!", Severity.Success);
+            _demonMessage = "Even in defeat, I see red. Pray we don't meet again.";
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+            NavigationManager.NavigateTo("/lilim");
+        }
+
+        else if (UserModel.PokerGameControl == 0)
+        {
+            //Return value to 5 of flow
+            await TransactionService.PokerGameControlReset(_id);
+            //Expel Service - Baal's special ability
+            await TransactionService.LostToBaal(_id);
+            Snackbar.Add("Baal won the game! 'Expel' activates!", Severity.Error);
+            _demonMessage = "I'll shatter every bone in your body and drag you back where you came from!";
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+            NavigationManager.NavigateTo("/games");
+        }
+        _demonMessage = "Every bluff costs a bone. Still want to play?";
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+
+    public void GameReset()
+    {
+        _showDealerCards = false;
+
+        CardsPlayer.Clear();
+        CardsDealer.Clear();
+        AllCardsList.Clear();
+        CardsPlayerEndgame.Clear();
+        CardsDealerEndgame.Clear();
+
+        _betDealer = 0;
+        _demonMessage = "Every bluff costs a bone. Still want to play?";
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+
+    public async void ShowDealerCards()
+    {
+        _showDealerCards = true;
+        await Task.Delay(2000);
+        StateHasChanged();
+    }
+
+    public int GetDealerHandStrength()
+    {
+        // Rank order for poker combinations
+        var rankOrder = new[] { "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+
+        // Group cards by suit and rank
+        var groupedBySuit = CardsDealerEndgame.GroupBy(card => card.Suit).ToList();
+        var groupedByRank = CardsDealerEndgame.GroupBy(card => card.Number).ToList();
+
+        // Check for Royal Flush
+        bool RoyalFlush = groupedBySuit.Any(g => g.Count() == 5 && new[] { "10", "Jack", "Queen", "King", "Ace" }.All(rank => g.Select(card => card.Number).Contains(rank)));
+
+        if (RoyalFlush) return 10;  // Royal Flush
+
+        // Check for Straight Flush
+        bool StraightFlush = groupedBySuit.Any(g =>
+        {
+            if (g.Count() != 5)
+                return false;
+
+            var handRanks = g.Select(card => card.Number).ToList();
+            var rankIndexes = handRanks.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+            // Handle Ace-low straight (A, 2, 3, 4, 5)
+            if (rankIndexes.Contains(12) && rankIndexes.Contains(0) && rankIndexes.Count == 5)
+            {
+                rankIndexes.Remove(12);
+                rankIndexes.Add(0);
+                rankIndexes = rankIndexes.OrderBy(index => index).ToList();
+            }
+
+            for (int i = 1; i < rankIndexes.Count; i++)
+            {
+                if (rankIndexes[i] != rankIndexes[i - 1] + 1)
+                    return false;
+            }
+            return true;
+        });
+
+        if (StraightFlush) return 9;  // Straight Flush
+
+        // Check for other hands: Four of a Kind, Full House, Flush, etc.
+        bool FourOfAKind = groupedByRank.Any(g => g.Count() == 4);
+        if (FourOfAKind) return 8;
+
+        bool FullHouse = groupedByRank.Any(g => g.Count() == 3) && groupedByRank.Any(x => x.Count() == 2);
+        if (FullHouse) return 7;
+
+        bool Flush = groupedBySuit.Any(g => g.Count() == 5);
+        if (Flush) return 6;
+
+        // Check for Straight
+        var handRanksList = CardsDealerEndgame.Select(card => card.Number).ToList();
+        var rankIndexesForStraight = handRanksList.Select(rank => Array.IndexOf(rankOrder, rank)).OrderBy(index => index).ToList();
+
+        if (rankIndexesForStraight.Contains(12) && rankIndexesForStraight.Contains(0) && rankIndexesForStraight.Count == 5)
+        {
+            rankIndexesForStraight.Remove(12);
+            rankIndexesForStraight.Add(0);
+            rankIndexesForStraight = rankIndexesForStraight.OrderBy(index => index).ToList();
+        }
+
+        bool isStraight = true;
+        for (int i = 1; i < rankIndexesForStraight.Count; i++)
+        {
+            if (rankIndexesForStraight[i] != rankIndexesForStraight[i - 1] + 1)
+            {
+                isStraight = false;
+                break;
+            }
+        }
+        if (isStraight) return 5;
+
+        // Check for Three of a Kind, Two Pair, Pair
+        bool ThreeOfAKind = groupedByRank.Any(g => g.Count() == 3);
+        if (ThreeOfAKind) return 4;
+
+        bool TwoPair = groupedByRank.Count(g => g.Count() == 2) == 2;
+        if (TwoPair) return 3;
+
+        bool Pair = groupedByRank.Any(g => g.Count() == 2);
+        if (Pair) return 2;
+
+        return 1; // High Card
+    }
+
+    public void DealerDecision()
+    {
+        Random random = new Random();
+        int randomNumber = random.Next(1, 11);
+        int randomNumberBet = random.Next(1, 2);
+
+        // Dealer bluff
+        if (randomNumber == 1 || randomNumber == 2)
+        {
+            // Dealer bluff method
+            if (randomNumberBet == 1)
+            {
+                RaiseDealer();
+            }
+            else
+            {
+                CallDealer();
+            }
+        }
+        else
+        {
+            // Dealer not bluffing
+            int handStrength = GetDealerHandStrength();
+
+            // Define thresholds for dealer actions based on hand strength
+            int callThreshold = 2;   // Raise if the hand strength is greater than or equal to 2 (Pair)
+            int raiseThreshold = 6;  // Raise if the hand strength is greater than or equal to 6 (Flush)
+
+            // Check dealer's hand strength and make a decision
+            if (handStrength >= raiseThreshold)
+            {
+                // Raise if the hand strength is strong (Full House or better)
+                RaiseDealer();
+            }
+            else if (handStrength >= callThreshold)
+            {
+                // Call if the hand strength is moderate (Two Pair or better)
+                CallDealer();
+            }
+            else
+            {
+                // Fold if the hand is weak (Pair or worse)
+                FoldDealer();
+            }
+        }
+    }
+
+    private async Task SetBet()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<BetSetComponent>("Set your bet", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _gameBet = result.Data != null ? (int)result.Data : 50;
+            CheckUlog();
+        }
+        _demonMessage = "Every bluff costs a bone. Still want to play?";
+    }
+
+    private void CheckUlog()
+    {
+        if (_gameBet > UserModel.Balance)
+        {
+            Snackbar.Add("The bet cannot exceed your balance! Balance value has been set", Severity.Warning);
+            _gameBet = UserModel.Balance;
+        }
+    }
+
+    private void GoBackAndChangeBet()
+    {
+        _playGame = false;
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    private async void DrawAgain()
+    {
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+        GameReset();
+        _showDealerCards = false;
+        await FirstDraw();
+    }
+
+}

@@ -1,0 +1,259 @@
+﻿@page "/login"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using GamblersHell.Client.StateProviders
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject CookieAuthenticationStateProvider AuthManager
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavMenuState NavMenuState
+@attribute [AllowAnonymous]
+
+<PageTitle>Login @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<style>
+    body {
+        background-image: linear-gradient(135deg, #000000, #0a0000, #1a0000, #2d0000, #3d0000, #2d0000, #1a0000, #0a0000, #000000);
+    }
+
+    .login-card {
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .form-container {
+        background-color: rgba(25, 25, 25, 0.95);
+        border-radius: 0 0 16px 16px;
+        padding: 24px 32px;
+    }
+
+    .logo-container {
+        background-color: rgba(20, 20, 20, 0.95);
+        padding: 24px 0;
+    }
+
+    .form-field {
+        margin-bottom: 20px;
+    }
+
+    /* Override MudBlazor field styles for dark theme */
+    ::deep .mud-input {
+        color: #ff3333 !important;
+    }
+
+    ::deep .mud-input-label {
+        color: #ff3333 !important;
+        background-color: transparent !important;
+    }
+
+    ::deep .mud-input-label-outlined {
+        background-color: rgba(25, 25, 25, 0.95) !important;
+        padding: 0 5px;
+    }
+
+    ::deep .mud-input-outlined {
+        border-color: rgba(255, 0, 0, 0.5) !important;
+    }
+
+        ::deep .mud-input-outlined:hover {
+            border-color: #ff3333 !important;
+        }
+
+        ::deep .mud-input-outlined:focus-within {
+            border-color: #ff0000 !important;
+        }
+
+            ::deep .mud-input-outlined:focus-within .mud-input-label {
+                color: #ff0000 !important;
+            }
+
+    ::deep .mud-divider {
+        background-color: rgba(255, 0, 0, 0.3) !important;
+    }
+
+    /* Placeholder text color */
+    ::deep .mud-input::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+        opacity: 1;
+    }
+
+    ::deep .mud-input:-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    ::deep .mud-input::-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex justify-center align-center" Style="height: 100vh; padding: 16px;">
+    <MudPaper Class="login-card" Style="width: 100%;">
+        <MudContainer Class="logo-container d-flex flex-column justify-content-center align-items-center">
+            <MudImage ObjectFit="ObjectFit.Contain" Src="MainLogo.png" Width="150" Height="150" Class="mb-3" />
+            <MudText Typo="Typo.h4" Style="color:#ff0000; font-weight: 600;" Class="mb-2">Login</MudText>
+            <MudText Typo="Typo.subtitle1" Style="color:#ff3333; opacity: 0.8;">Welcome back</MudText>
+        </MudContainer>
+
+        <MudContainer Class="form-container">
+            <MudForm @ref="_form" @bind-IsValid="@_isFormValid" Model="@UserModel">
+                <MudTextField Class="form-field"
+                              T="string"
+                              Placeholder="Username"
+                              Style="color:white"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              RequiredError="Username is required"
+                              @bind-Value="UserModel.Username"
+                              For="@(() => UserModel.Username)"
+                              OnlyValidateIfDirty="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              AdornmentColor="Color.Error" />
+
+                <MudTextField Class="form-field"
+                              T="string"
+                              Style="color:white"
+                              Placeholder="Password"
+                              Variant="Variant.Outlined"
+                              InputType="showPasswordAction()"
+                              Required="true"
+                              @bind-Value="UserModel.Password"
+                              For="@(() => UserModel.Password)"
+                              RequiredError="Password is required!"
+                              Immediate="true"
+                              OnlyValidateIfDirty="true"
+                              @onkeypress="@OnKeyPressedLogin"
+                              Adornment="Adornment.Start"
+                              OnAdornmentClick="() => showPasswordButton()"
+                              AdornmentIcon="@(showPassword ? @Icons.Material.Filled.VisibilityOff : @Icons.Material.Filled.Visibility)"
+                              AdornmentColor="Color.Error">
+                </MudTextField>
+
+                <MudButton FullWidth="true"
+                           Disabled="@_processingLogin"
+                           Size="Size.Large"
+                           OnClick="UserLogin"
+                           Variant="Variant.Filled"
+                           Color="Color.Error"
+                           Style="border-radius: 8px; padding: 12px 0; font-weight: 500;">
+                    @if (_processingLogin)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Authenticating...</MudText>
+                    }
+                    else
+                    {
+                        <MudContainer Class="d-flex flex-row align-content-center align-items-center justify-content-center">
+                            <MudText>Sign In</MudText>
+                            <MudIcon Class="mx-1" Icon="@Icons.Material.Filled.Login"></MudIcon>
+                        </MudContainer>
+                    }
+                </MudButton>
+
+                <div Class="mt-3">
+                    @foreach (var error in _errors)
+                    {
+                        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Dense="true" Class="my-2">@error</MudAlert>
+                    }
+                </div>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column align-content-center align-items-center justify-content-center" Style="background-color: transparent;">
+                    <MudLink Underline="Underline.Always" Color="Color.Error" Href="/forgottenpassword">Forgotten Password?</MudLink>
+                </MudPaper>
+
+                <MudDivider Class="my-4" />
+
+                <MudPaper Elevation="0" Class="d-flex flex-column align-content-center align-items-center justify-content-center" Style="background-color: transparent;">
+                    <MudText Typo="Typo.body2" Style="margin-bottom: 4px; color: #ff3333;">Don't have an account?</MudText>
+                    <MudLink Underline="Underline.Always" Color="Color.Error" Href="/register">Create an account</MudLink>
+                </MudPaper>
+            </MudForm>
+        </MudContainer>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool _isFormValid;
+    private bool showPassword = false;
+    private bool _processingLogin = false;
+
+    public LoginDTO UserModel { get; set; } = new LoginDTO();
+
+    MudForm _form;
+    List<string> _errors = new List<string>();
+
+    [Parameter, SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? _ReturnUrl { get; set; }
+
+    [CascadingParameter] public Task<AuthenticationState> _AuthStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await _AuthStateTask).User;
+        if (user.Identity.IsAuthenticated)
+            NavManager.NavigateTo("/");
+    }
+
+    public async Task UserLogin()
+    {
+        if (string.IsNullOrEmpty(UserModel.Username))
+        {
+            Snackbar.Add("Username is required!", Severity.Error);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(UserModel.Password))
+        {
+            Snackbar.Add("Password is required", Severity.Error);
+            return;
+        }
+
+        if (!_form.IsValid) return;
+        _processingLogin = true;
+        _errors.Clear();
+        var result = await AuthManager.Login(UserModel);
+        _processingLogin = false;
+
+        var redirectUrl = string.IsNullOrEmpty(_ReturnUrl) ? "/" : _ReturnUrl;
+        if (result.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo(redirectUrl);
+            NavMenuState.RefreshNavMenu();
+        }
+        else
+        {
+            _errors.Add("Incorrect username or password!");
+            UserModel.Password = string.Empty;
+        }
+    }
+
+    public async Task OnKeyPressedLogin(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await UserLogin();
+        }
+    }
+
+    private void showPasswordButton()
+    {
+        showPassword = !showPassword;
+    }
+
+    private InputType showPasswordAction()
+    {
+        if (!showPassword)
+        {
+            return InputType.Password;
+        }
+        else
+        {
+            return InputType.Text;
+        }
+    }
+}

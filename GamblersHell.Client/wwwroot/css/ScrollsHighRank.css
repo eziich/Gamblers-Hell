@@ -1,0 +1,58 @@
+﻿/* Scroll Container */
+.scroll-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden; /* Hide the overflow when the scroll is closed */
+}
+
+/* Scroll Styling */
+.scroll {
+    position: relative;
+    width: 100%;
+    max-height: 0; /* Start with max-height 0 */
+    overflow: hidden;
+    transform-origin: top;
+    animation: unfold 3s ease-out forwards; /* Animation for unfolding the scroll */
+    will-change: transform, max-height; /* Optimize rendering of transform and max-height */
+    background-image: url('/ScrollHighRank.jpg'); /* Replace this with your scroll image */
+    background-size: 100% 100%; /* Ensure the image stretches to fit the scroll */
+    background-repeat: no-repeat;
+    background-position: top center; /* Adjust as needed */
+}
+
+/* Scroll Text Styling */
+.scroll-text {
+    padding: 60px;
+    font-size: 17px;
+    line-height: 1.5;
+    opacity: 0; /* Text is hidden at first */
+    animation: fadeInText 5s ease-out 2s forwards; /* Text fades in after 1s */
+    overflow: hidden;
+    max-width: 90%;
+    color:white;
+}
+
+/* Unfold Animation */
+@keyframes unfold {
+    0% {
+        max-height: 0;
+        transform: rotateX(90deg); /* Initial state - rotated */
+    }
+
+    100% {
+        max-height: 1000px; /* Allow the scroll to expand as much as needed */
+        transform: rotateX(0deg); /* Final state - fully opened */
+    }
+}
+
+/* Fade in the text as the scroll unfolds */
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

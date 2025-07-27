@@ -1,0 +1,78 @@
+﻿@using GamblersHell.Shared
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<PageTitle>User Verified @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .checkmark-icon {
+        max-height: 300px;
+        max-width: 300px;
+        font-size: 100px;
+        animation: glow 3s infinite alternate;
+    }
+
+    .latin-quote {
+        font-family: 'Cinzel', serif;
+        color: #ff9999;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        animation: glow 3s infinite alternate;
+    }
+
+    .quote-container {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .demon-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-8">
+    <MudPaper Elevation="3" Style="background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000); border: 1px solid #ff6666; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); padding: 40px 20px;" Class="text-center">
+        <MudText Typo="Typo.h6" Class="my-4" Style="color: #ff6666; margin-top: 16px; font-style: italic; text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">
+            "Your account has been verifiend and your soul is at stake"
+        </MudText>
+        <MudContainer Class="quote-container">
+            <MudContainer>
+                <MudIcon style="max-height:200px; max-width:200px; color:red" class="checkmark-icon" Icon="@Icons.Material.Filled.ReceiptLong"></MudIcon>
+            </MudContainer>
+        </MudContainer>
+    </MudPaper>
+</MudContainer>
+
+
+@code {
+}

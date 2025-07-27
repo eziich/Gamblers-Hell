@@ -1,0 +1,30 @@
+[
+  {
+    "ID": 1,
+    "Reward": 666,
+    "Picture": "GamesComponents/SlotsComponents/SlotsWin.png"
+  },
+
+  {
+    "ID": 2,
+    "Reward": 20,
+    "Picture": "GamesComponents/SlotsComponents/SlotsGoat.png"
+  },
+
+  {
+    "ID": 3,
+    "Reward": 15,
+    "Picture": "GamesComponents/SlotsComponents/Slots666.png"
+  },
+  {
+    "ID": 4,
+    "Reward": 10,
+    "Picture": "GamesComponents/SlotsComponents/SlotsChalice.png"
+  },
+
+  {
+    "ID": 5,
+    "Reward": 5,
+    "Picture": "GamesComponents/SlotsComponents/SlotsTrident.png"
+  }
+]

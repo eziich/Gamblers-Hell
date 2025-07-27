@@ -1,0 +1,28 @@
+﻿<MudDialog Style=" background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%); background-attachment: fixed; background-size: cover;">
+    <TitleContent>
+        <MudText Style="color:white" Typo="Typo.body2">Baal has rased his bet</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Style="color:white" Typo="Typo.h6"><span><i>"Raise your bet maggot or lose the round"</i></span></MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudContainer Class="d-flex flex-row align-items-center justify-content-center align-content-center">
+            <MudButton Color="Color.Error" OnClick="Cancel">Fold</MudButton>
+            <MudButton Color="Color.Success" OnClick="Submit">Raise</MudButton>
+        </MudContainer>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

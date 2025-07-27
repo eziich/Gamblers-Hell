@@ -1,0 +1,526 @@
+﻿@page "/limbo"
+@using GamblersHell.Models
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
+@inject RiddleService RiddleService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject NavMenuState NavMenuState
+@inject UserService UserService
+@inject TransactionService TransactionService
+@attribute [Authorize]
+
+<PageTitle>Limbo @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(90deg, #000000, #000000, #333333, #666666, #999999, #cccccc, #ffffff);
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px black);
+        transition: transform 0.3s ease;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px black;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: black !important;
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .game-button {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ffffff !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #484848 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+    .game-button-mobile {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        text-transform: uppercase;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button-mobile:hover:not(.mud-disabled-text) {
+            background-color: #484848 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+    .game-button-character {
+        background-color: white !important;
+        color: #ffffff !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ffffff !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button-character:hover:not(.mud-disabled-text) {
+            background-color: white !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0)
+    {
+        <VerificationNotificationComponent />
+        <UserNotVerifiedHellInteraction />
+    }
+    else
+    {
+        @* Mobile Version *@
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudContainer Class="d-flex flex-column justify-content-center align-items-center">
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                    <MudText Class="title-text pulse-glow" Typo="Typo.h4">The Riddle</MudText>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                    <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#333333 !important" Arrow="true">
+                        <MudImage Class="demon" Src="Demons/Limbo.png" Width="200" Height="200"></MudImage>
+                    </MudTooltip>
+                </MudPaper>
+
+                @if (_playGame)
+                {
+
+                    @if (_showSymbols == true)
+                    {
+                        <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4">
+                            @foreach (var dealerSymbol in DealerSymbols)
+                            {
+                                <MudImage Class="mx-2 p-3" ObjectFit="ObjectFit.ScaleDown" Src="@dealerSymbol.Picture" Width="50" Height="50"></MudImage>
+                            }
+                        </MudPaper>
+                    }
+                    else
+                    {
+                        <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4">
+                            @foreach (var kugla in DealerSymbols)
+                            {
+                                <MudImage Class="mx-2 p-3" ObjectFit="ObjectFit.ScaleDown" Src="GamesComponents/RiddleComponents/RiddleGuess.png" Width="50" Height="50"></MudImage>
+                            }
+                        </MudPaper>
+                    }
+
+                    @* Display rounds 0-6 (all 7 attempts) *@
+                    @for (int round = 0; round < _maxRounds; round++)
+                    {
+                        int currentRound = round;
+
+                        @* Only show this round if previous rounds are completed or it's the first round *@
+                        @if (round == 0 || (round > 0 && _roundEnded[round - 1]))
+                        {
+                            <MudPaper Elevation="0" Class="d-flex flex-row mt-4">
+                                @foreach (var symbol in PlayerSymbols[currentRound])
+                                {
+                                    <MudImage Class="mx-2 p-3" Src="@symbol.Picture" ObjectFit="ObjectFit.ScaleDown" Width="50" Height="50"></MudImage>
+                                }
+                            </MudPaper>
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                @if (PlayerSymbols[currentRound].Count > 0)
+                                {
+                                    <MudButton Class="game-button-mobile" Size="Size.Small" Disabled="_stopped[currentRound]" @onclick="() => removeSymbol(currentRound)">Remove Last Symbol</MudButton>
+                                    <MudButton Class="game-button-mobile" Size="Size.Small" Disabled="PlayerSymbols[currentRound].Count < 5 || _stopped[currentRound]" @onclick="async () => await RiddleGame(currentRound)">Compare</MudButton>
+                                    @if (_roundEnded[currentRound])
+                                    {
+                                        <MudButton Class="game-button-mobile" Size="Size.Small" Style="pointer-events:none">Correct Position: @_correctSymbolsPosition[currentRound]</MudButton>
+                                        <MudButton Class="game-button-mobile" Size="Size.Small" Style="pointer-events:none">Correct Symbol, Wrong Position: @_correctSymbolsWrongPosition[currentRound]</MudButton>
+                                    }
+                                }
+                            </MudPaper>
+                        }
+                    }
+                    @* Symbol selection - Only show if the current active round has less than 5 symbols *@
+                    @if (_currentActiveRound < _maxRounds && PlayerSymbols[_currentActiveRound].Count < 5)
+                    {
+                        <MudPaper Elevation="0">
+                            @foreach (var symbol in ListSymbols)
+                            {
+                                <MudButton Class="game-button-character" @onclick="() => ChooseSymbol(symbol.ID)">
+                                    <MudImage Src="@symbol.Picture" ObjectFit="ObjectFit.ScaleDown" Width="50" Height="50"></MudImage>
+                                </MudButton>
+                            }
+                        </MudPaper>
+                    }
+                }
+                else
+                {
+                    <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                }
+            </MudContainer>
+        </MudHidden>
+
+
+        @* PC Version *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudContainer Class="d-flex flex-column justify-content-center align-items-center">
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                    <MudText Class="title-text pulse-glow" Typo="Typo.h3">The Riddle</MudText>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                    <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#333333 !important" Arrow="true">
+                        <MudImage Class="demon" Src="Demons/Limbo.png" Width="250" Height="250"></MudImage>
+                    </MudTooltip>
+                </MudPaper>
+
+                @if (_playGame)
+                {
+
+                    @if (_showSymbols == true)
+                    {
+                        <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4">
+                            @foreach (var dealerSymbol in DealerSymbols)
+                            {
+                                <MudImage Class="mx-2 p-3" Src="@dealerSymbol.Picture" Width="150" Height="150"></MudImage>
+                            }
+                        </MudPaper>
+                    }
+                    else
+                    {
+                        <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4">
+                            @foreach (var kugla in DealerSymbols)
+                            {
+                                <MudImage Class="mx-2 p-3" Src="GamesComponents/RiddleComponents/RiddleGuess.png" Width="150" Height="150"></MudImage>
+                            }
+                        </MudPaper>
+                    }
+
+                    @* Display rounds 0-6 (all 7 attempts) *@
+                    @for (int round = 0; round < _maxRounds; round++)
+                    {
+                        int currentRound = round;
+
+                        @* Only show this round if previous rounds are completed or it's the first round *@
+                        @if (round == 0 || (round > 0 && _roundEnded[round - 1]))
+                        {
+                            <MudPaper Elevation="0" Class="d-flex flex-row mt-4">
+                                @foreach (var symbol in PlayerSymbols[currentRound])
+                                {
+                                    <MudImage Class="mx-2 p-3" Src="@symbol.Picture" Width="150" Height="150"></MudImage>
+                                }
+                            </MudPaper>
+                            <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center mb-4">
+                                @if (PlayerSymbols[currentRound].Count > 0)
+                                {
+                                    <MudButton Class="game-button" Disabled="_stopped[currentRound]" @onclick="() => removeSymbol(currentRound)">Remove Last Symbol</MudButton>
+                                    <MudButton Class="game-button" Disabled="PlayerSymbols[currentRound].Count < 5 || _stopped[currentRound]" @onclick="async () => await RiddleGame(currentRound)">Compare</MudButton>
+                                    @if (_roundEnded[currentRound])
+                                    {
+                                        <MudButton Class="game-button" Style="pointer-events:none">Correct Position: @_correctSymbolsPosition[currentRound]</MudButton>
+                                        <MudButton Class="game-button" Style="pointer-events:none">Correct Symbol, Wrong Position: @_correctSymbolsWrongPosition[currentRound]</MudButton>
+                                    }
+                                }
+                            </MudPaper>
+                        }
+                    }
+
+                    @* Symbol selection - Only show if the current active round has less than 5 symbols *@
+                    @if (_currentActiveRound < _maxRounds && PlayerSymbols[_currentActiveRound].Count < 5)
+                    {
+                        <MudPaper Elevation="0">
+                            @foreach (var symbol in ListSymbols)
+                            {
+                                <MudButton Class="game-button-character" @onclick="() => ChooseSymbol(symbol.ID)">
+                                    <MudImage Src="@symbol.Picture" Width="150" Height="150"></MudImage>
+                                </MudButton>
+                            }
+                        </MudPaper>
+                    }
+                }
+                else
+                {
+                    <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                }
+            </MudContainer>
+        </MudHidden>
+    }
+}
+
+@code {
+    private const int _maxRounds = 7; // Increased to 7 attempts
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _gameProgressionLevel = 2;
+    private int _currentActiveRound = 0;
+    private int _gameBet = 100;
+    private bool _playGame = false;
+    private bool _pageLoading = true;
+    private bool _showSymbols = false;
+    private string _demonMessage = "You're already doomed. I'm just here for the entertainment.";
+    private string _gameSessionToken;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private List<RiddleSymbolsDTO> DealerSymbols = new();
+    private List<RiddleSymbolsDTO> ListSymbols = new();
+
+    // Matrix approach - jagged array of lists
+    private List<RiddleSymbolsDTO>[] PlayerSymbols = new List<RiddleSymbolsDTO>[_maxRounds];
+    private int[] _correctSymbolsPosition = new int[_maxRounds]; // Correct symbol and position
+    private int[] _correctSymbolsWrongPosition = new int[_maxRounds]; // Correct symbol but wrong position
+    private bool[] _stopped = new bool[_maxRounds];
+    private bool[] _roundEnded = new bool[_maxRounds];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Limbo");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "Riddle, just for you..";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+
+        // Initialize all the arrays
+        for (int i = 0; i < _maxRounds; i++)
+        {
+            PlayerSymbols[i] = new List<RiddleSymbolsDTO>();
+            _correctSymbolsPosition[i] = 0;
+            _correctSymbolsWrongPosition[i] = 0;
+            _stopped[i] = false;
+            _roundEnded[i] = false;
+        }
+
+        await Task.Delay(150);
+        await DealerCombination();
+        await Symbols();
+        _pageLoading = false;
+    }
+
+    public async void PlayGame()
+    {
+        _playGame = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task DealerCombination()
+    {
+        while (DealerSymbols.Count < 5)
+        {
+            var symbol = await RiddleService.GetRiddleSymbolAsync();
+            DealerSymbols.Add(symbol);
+        }
+    }
+
+    public async Task Symbols()
+    {
+        ListSymbols = await RiddleService.GetRiddleSymbolsAsync();
+    }
+
+    public void ChooseSymbol(int ID)
+    {
+        var chosenSymbol = ListSymbols.FirstOrDefault(k => k.ID == ID);
+
+        if (chosenSymbol != null && _currentActiveRound < _maxRounds)
+        {
+            if (PlayerSymbols[_currentActiveRound].Count < 5)
+            {
+                PlayerSymbols[_currentActiveRound].Add(chosenSymbol);
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async Task RiddleGame(int round)
+    {
+        // Reset counters for this round
+        _correctSymbolsPosition[round] = 0;
+        _correctSymbolsWrongPosition[round] = 0;
+
+        // Make copies of the lists to track which symbols have been matched
+        List<int> dealerSymbolsIds = DealerSymbols.Select(s => s.ID).ToList();
+        List<int> playerSymbolsIds = PlayerSymbols[round].Select(s => s.ID).ToList();
+
+        // First check for exact matches (correct symbol in correct position)
+        for (int i = 0; i < 5; i++)
+        {
+            if (i < playerSymbolsIds.Count && playerSymbolsIds[i] == dealerSymbolsIds[i])
+            {
+                _correctSymbolsPosition[round]++;
+
+                // Mark these symbols as matched so they aren't counted twice
+                dealerSymbolsIds[i] = -1;
+                playerSymbolsIds[i] = -2;
+            }
+        }
+
+        // Then check for correct symbols in wrong positions
+        for (int i = 0; i < 5; i++)
+        {
+            if (i < playerSymbolsIds.Count && playerSymbolsIds[i] >= 0)
+            {
+                int dealerIndex = dealerSymbolsIds.IndexOf(playerSymbolsIds[i]);
+                if (dealerIndex >= 0)
+                {
+                    _correctSymbolsWrongPosition[round]++;
+                    dealerSymbolsIds[dealerIndex] = -1;
+                }
+            }
+        }
+
+        _stopped[round] = true;
+        _roundEnded[round] = true;
+
+        if (_correctSymbolsPosition[round] == 5)
+        {
+            Snackbar.Add("You won!", Severity.Success);
+            _demonMessage = "Clever little worm... luck, no doubt.";
+            //User won the game for the first time, achivement
+            if (UserModel.Level == 1)
+            {
+                Snackbar.Add("A mind that solves riddles cannot be trapped. You've left your Limbo behind. The riddle was just the beginning. Your journey has only begun.", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                ShowSymbols();
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Limbo", _gameSessionToken);
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                _currentActiveRound = _maxRounds;
+                await Task.Delay(1000);
+                NavMenuState.RefreshNavMenu();
+                NavigationManager.NavigateTo("/asmodeus");
+                return;
+
+            }
+            ShowSymbols();
+            await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Limbo", _gameSessionToken);
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+
+            // Don't advance round since game is over
+            _currentActiveRound = _maxRounds; // Set to max to prevent further play
+        }
+        else if (round == _maxRounds - 1)
+        {
+            // Last round and didn't win
+            Snackbar.Add("You lost! Reseting the game", Severity.Error);
+            _demonMessage = "You actually thought that was right? Oh, how quaint!";
+            ShowSymbols();
+            await Task.Delay(3000);
+            await GameReset();
+        }
+        else
+        {
+            // Advance to next round
+            _currentActiveRound = round + 1;
+        }
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public void removeSymbol(int round)
+    {
+        if (PlayerSymbols[round].Count > 0)
+        {
+            PlayerSymbols[round].RemoveAt(PlayerSymbols[round].Count - 1);
+            StateHasChanged();
+        }
+    }
+
+    public void ShowSymbols()
+    {
+        _showSymbols = true;
+    }
+
+    public async Task GameReset()
+    {
+        DealerSymbols.Clear();
+
+        for (int i = 0; i < _maxRounds; i++)
+        {
+            PlayerSymbols[i].Clear();
+            _correctSymbolsPosition[i] = 0;
+            _correctSymbolsWrongPosition[i] = 0;
+            _stopped[i] = false;
+            _roundEnded[i] = false;
+        }
+
+        _currentActiveRound = 0;
+        _showSymbols = false;
+        _demonMessage = "Riddle, just for you";
+
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+}

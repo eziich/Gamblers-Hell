@@ -1,0 +1,445 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\obj\\Debug\\net8.0\\compressed\\dh6vo8qrcu.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\obj\\Debug\\net8.0\\scopedcss\\bundle\\GamblersHell.Client.styles.css",
+      "PackagePath": "staticwebassets\\GamblersHell.Client.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\obj\\Debug\\net8.0\\service-worker-assets.js",
+      "PackagePath": "staticwebassets\\service-worker-assets.js"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\obj\\Debug\\net8.0\\service-worker\\service-worker.published.js",
+      "PackagePath": "staticwebassets\\service-worker.js"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip100.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip100.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip1000.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip1000.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip10000.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip10000.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip50.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip50.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip500.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip500.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Chips\\Chip5000.png",
+      "PackagePath": "staticwebassets\\Chips\\Chip5000.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\FraudBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\FraudBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\FraudBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\FraudBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\GluttonyBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\GluttonyBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\GluttonyBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\GluttonyBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\GreedBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\GreedBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\GreedBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\GreedBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\HerseyBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\HerseyBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\HerseyBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\HerseyBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\LimboBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\LimboBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\LustBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\LustBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\LustBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\LustBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\TreacheryBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\TreacheryBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\ViolenceBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\ViolenceBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\ViolenceBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\ViolenceBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\WrathBackground.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\WrathBackground.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\DemonsBackground\\WrathBackgroundLocked.jpg",
+      "PackagePath": "staticwebassets\\DemonsBackground\\WrathBackgroundLocked.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Fraud.png",
+      "PackagePath": "staticwebassets\\Demons\\Fraud.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Gluttony.png",
+      "PackagePath": "staticwebassets\\Demons\\Gluttony.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Greed.png",
+      "PackagePath": "staticwebassets\\Demons\\Greed.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Hersey.png",
+      "PackagePath": "staticwebassets\\Demons\\Hersey.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Limbo.png",
+      "PackagePath": "staticwebassets\\Demons\\Limbo.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Lust.png",
+      "PackagePath": "staticwebassets\\Demons\\Lust.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Treachery1.png",
+      "PackagePath": "staticwebassets\\Demons\\Treachery1.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Treachery2.png",
+      "PackagePath": "staticwebassets\\Demons\\Treachery2.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Treachery3.png",
+      "PackagePath": "staticwebassets\\Demons\\Treachery3.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Treachery4.png",
+      "PackagePath": "staticwebassets\\Demons\\Treachery4.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Violence.png",
+      "PackagePath": "staticwebassets\\Demons\\Violence.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\Demons\\Wrath.png",
+      "PackagePath": "staticwebassets\\Demons\\Wrath.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast1.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast1.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast2.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast2.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast3.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast3.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast4.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast4.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast5.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast5.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\Beast6.gif",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\Beast6.gif"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\BeastRaceIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\BeastRaceIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BeastRaceComponents\\TheEye.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\BeastRaceComponents\\TheEye.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BlackjackComponents\\BlackJackIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\BlackjackComponents\\BlackJackIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\BlackjackComponents\\BlackjackFinalGameThrone.jpg",
+      "PackagePath": "staticwebassets\\GamesComponents\\BlackjackComponents\\BlackjackFinalGameThrone.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\CardWarsComponents\\CardWarsIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\CardWarsComponents\\CardWarsIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\HereticsRouletteComponents\\HereticsRouletteIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\HereticsRouletteComponents\\HereticsRouletteIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\LadyComponents\\Lady.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\LadyComponents\\Lady.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\LadyComponents\\LadyIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\LadyComponents\\LadyIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraCardBack.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraCardBack.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraEnvy.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraEnvy.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraGluttony.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraGluttony.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraGreed.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraGreed.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraHope.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraHope.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraLust.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraLust.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraPride.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraPride.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraSloth.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraSloth.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PandoraComponents\\PandoraWrath.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PandoraComponents\\PandoraWrath.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PokerComponents\\PokerCombinations.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PokerComponents\\PokerCombinations.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\PokerComponents\\PokerIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\PokerComponents\\PokerIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleGuess.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleGuess.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleSymbol1.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleSymbol1.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleSymbol2.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleSymbol2.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleSymbol3.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleSymbol3.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleSymbol4.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleSymbol4.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\RiddleComponents\\RiddleSymbol5.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\RiddleComponents\\RiddleSymbol5.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\Slots666.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\Slots666.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsChalice.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsChalice.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsDeath.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsDeath.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsGoat.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsGoat.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsIcon.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsIconChip.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsIconChip.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsTrident.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsTrident.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\GamesComponents\\SlotsComponents\\SlotsWin.png",
+      "PackagePath": "staticwebassets\\GamesComponents\\SlotsComponents\\SlotsWin.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\0.png",
+      "PackagePath": "staticwebassets\\HellPigComponents\\0.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\100.png",
+      "PackagePath": "staticwebassets\\HellPigComponents\\100.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\1000.png",
+      "PackagePath": "staticwebassets\\HellPigComponents\\1000.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\200.png",
+      "PackagePath": "staticwebassets\\HellPigComponents\\200.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\50.png",
+      "PackagePath": "staticwebassets\\HellPigComponents\\50.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HellPigComponents\\HellPig.jpg",
+      "PackagePath": "staticwebassets\\HellPigComponents\\HellPig.jpg"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HomeComponents\\MainCarousel1.png",
+      "PackagePath": "staticwebassets\\HomeComponents\\MainCarousel1.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HomeComponents\\MainCarousel2.png",
+      "PackagePath": "staticwebassets\\HomeComponents\\MainCarousel2.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\HomeComponents\\MainCarousel3.png",
+      "PackagePath": "staticwebassets\\HomeComponents\\MainCarousel3.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\MainLogo.png",
+      "PackagePath": "staticwebassets\\MainLogo.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\DemonFloat.css",
+      "PackagePath": "staticwebassets\\css\\DemonFloat.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\ScrollsHighRank.css",
+      "PackagePath": "staticwebassets\\css\\ScrollsHighRank.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\ScrollsLowRank.css",
+      "PackagePath": "staticwebassets\\css\\ScrollsLowRank.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\ScrollsMediumRank.css",
+      "PackagePath": "staticwebassets\\css\\ScrollsMediumRank.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\eziich\\eziichSignature.png",
+      "PackagePath": "staticwebassets\\eziich\\eziichSignature.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\icon-512.png",
+      "PackagePath": "staticwebassets\\icon-512.png"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\js\\refreshHandler.js",
+      "PackagePath": "staticwebassets\\js\\refreshHandler.js"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\js\\treachery.js",
+      "PackagePath": "staticwebassets\\js\\treachery.js"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\manifest.webmanifest",
+      "PackagePath": "staticwebassets\\manifest.webmanifest"
+    },
+    {
+      "Id": "C:\\Users\\DT User\\source\\repos\\GamblersHell\\GamblersHell.Client\\wwwroot\\sample-data\\weather.json",
+      "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.GamblersHell.Client.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.GamblersHell.Client.props",
+      "PackagePath": "build\\GamblersHell.Client.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.GamblersHell.Client.props",
+      "PackagePath": "buildMultiTargeting\\GamblersHell.Client.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.GamblersHell.Client.props",
+      "PackagePath": "buildTransitive\\GamblersHell.Client.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

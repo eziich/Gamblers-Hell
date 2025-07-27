@@ -1,0 +1,188 @@
+﻿@page "/asmodeus"
+@using GamblersHell.Client.StateProviders
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Asmodeus @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/ScrollsHighRank.css">
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .satan-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+    }
+
+    .scroll-container {
+    }
+
+    .scroll {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        padding: 2rem;
+        border: 2px solid #ff9999;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .scroll:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+    .scroll-text {
+        color: #ff9999;
+    }
+
+    .satan-image {
+        filter: contrast(1.2) saturate(1.2);
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .warning-text {
+        background-color: rgba(61, 0, 0, 0.6);
+        border-radius: 4px;
+        padding: 1rem;
+        border: 1px solid #ff9999;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 2)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+            <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-1">
+                <MudContainer Class="scroll-container">
+                    <MudContainer Class="scroll">
+                        <MudContainer Class="scroll-text d-flex flex-column justify-content-center align-items-center">
+                            <MudImage Src="Demons/Lust.png" Width="300" Height="300"></MudImage>
+                            <MudText Typo="Typo.h3">ASMODEUS</MudText>
+                            <MudText Align="Align.Center" Typo="Typo.h5" Class="my-4">
+                                <i>
+                                    <span>
+                                        "Burning Desire"
+                                    </span>
+                                </i>
+                            </MudText>
+                            <MudText Class="mt-2 mb-5" Typo="Typo.body1" Align="Align.Center">
+                                <i>
+                                    <span>
+                                        Asmodeus is the embodiment of lustful obsession. His desire for Lilim, the daughter of Satan, is so deep and all-consuming that it defines his very existence.
+                                        Asmodeus is a tall, red and dark figure with burning eyes that reflect the fiery passion of his eternal love.
+                                        He is not a demon of fleeting lust but of obsessive, consuming desire—one that cannot be quenched, always reaching for the unattainable.
+                                        His appearance may flicker and change, at times resembling a powerful lover, at others a shadowed, longing figure lost in desire.
+                                        In his game, Asmodeus’s heart aches with longing for Lilim, and this eternal yearning is mirrored in the rules of his game.
+                                        The cards themselves are infused with his obsession: each pair represents the endless cycle of desire, of chasing what is always just beyond reach.
+                                        The “Lilim” card is the key to the game, and whoever is left holding it at the end loses.
+                                    </span>
+                                </i>
+                            </MudText>
+                        </MudContainer>
+                    </MudContainer>
+                </MudContainer>
+
+                <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+                    <PageFooter />
+                </MudItem>
+            </MudItem>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    public bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+        _pageLoading = false;
+        StateHasChanged();
+    }
+}

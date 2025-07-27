@@ -1,0 +1,495 @@
+﻿@page "/hersey"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject HereticsRouletteService HerectisRouletteService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject NavMenuState NavMenuState
+@inject UserService UserService
+@inject TransactionService TransactionService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Hersey @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: linear-gradient( 180deg, #000000, #0a0a0a, #141414, #1e1e1e, #2a2a2a, #363636);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px white;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: black !important;
+    }
+
+    .game-card {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        border-radius: 8px;
+    }
+
+    .playerCards {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        border-radius: 8px;
+    }
+
+        .playerCards:hover {
+            transform: translateY(-5px) scale(1.1);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+    }
+
+    .game-button {
+        background-color: #2d2d2d !important;
+        color: #ffffff !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ffffff !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #484848 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #ffffff, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .score-chip {
+        background-color: #2d2d2d !important;
+        border: 1px solid #ffffff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        font-family: 'Cinzel', serif;
+    }
+
+    .cards-container {
+        background: rgba(30, 30, 30, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .card-text {
+        font-family: 'Cinzel', serif;
+        color: #ffffff !important;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Override MudChip styles */
+    .mud-chip {
+        background-color: #2d2d2d !important;
+        border: 1px solid #ffffff !important;
+        color: #ffffff !important;
+        font-family: 'Cinzel', serif;
+    }
+
+        .mud-chip .mud-chip-content {
+            color: #ffffff !important;
+        }
+
+    /* Keeping the original card hover effect */
+    .playerCards:hover {
+        transform: scale(1.1);
+        transition: transform .5s;
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 6)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+            @*Mobile Version*@
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudContainer Class="d-flex flex-column justify-content-center align-items-center">
+
+                    <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                        <MudText Class="title-text pulse-glow" Typo="Typo.h4">Heretic's Roulette</MudText>
+                    </MudPaper>
+
+                    <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                        <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:black" Arrow="true">
+                            <MudImage Class="demon" Src="Demons/Hersey.png" Width="200" Height="200"></MudImage>
+                        </MudTooltip>
+                    </MudPaper>
+
+                    @if (_playGame)
+                    {
+                        <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center my-2">
+                            <MudChip Style="color:white" Size="Size.Large" T="int">Belphegor's shots: @_dealerShots</MudChip>
+
+                            @if (!_showCards)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column align-items-center justify-content-center my-2">
+                                    <MudImage Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/blue.svg" Width="80" Height="100" />
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column align-items-center justify-content-center my-2">
+                                    <MudImage Width="80" Height="100" Src="@DealerCard.Image"></MudImage>
+                                </MudPaper>
+                            }
+
+                            @if (!_showCards)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-row my-2">
+                                    <MudImage Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/blue.svg" Width="80" Height="100" />
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudImage Width="80" Height="100" Src="@PlayerCard.Image"></MudImage>
+                            }
+
+                            @if (ListPossibleCards.Count > 0)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-wrap flex-row my-2 justify-content-center align-items-center">
+                                    @foreach (var card in ListPossibleCards)
+                                    {
+                                        <MudImage Class="playerCards ma-2" Width="80" Height="100" Src="@card.Image" @onclick="async() => await DanteRouletteGame(card.Value)"></MudImage>
+                                    }
+                                </MudPaper>
+                            }
+
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                            <MudChip T="int" Style="color:white" Size="Size.Large">Your shots: @_playerShots</MudChip>
+                            <MudButton Class="game-button" Disabled="ListPossibleCards.Count != 0" Variant="Variant.Text" Size="Size.Medium" OnClick="CardPick">Draw Cards</MudButton>
+                        </MudPaper>
+                    }
+                    else
+                    {
+                        <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                    }
+                </MudContainer>
+            </MudHidden>
+
+
+            @*PC Version*@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudContainer Class="d-flex flex-column justify-content-center align-items-center">
+
+                    <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                        <MudText Class="title-text pulse-glow" Typo="Typo.h3">Heretic's Roulette</MudText>
+                    </MudPaper>
+
+                    <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                        <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:black" Arrow="true">
+                            <MudImage Class="demon" Src="Demons/Hersey.png" Width="250" Height="250"></MudImage>
+                        </MudTooltip>
+                    </MudPaper>
+
+                    @if (_playGame)
+                    {
+
+                        <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center my-2">
+
+                            <MudChip Style="color:white" Size="Size.Large" T="int">Belphegor's shots: @_dealerShots</MudChip>
+
+                            @if (!_showCards)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column align-items-center justify-content-center my-2">
+                                    <MudImage Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/blue.svg" Width="100" Height="140" />
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column align-items-center justify-content-center my-2">
+                                    <MudImage Width="100" Height="140" Src="@DealerCard.Image"></MudImage>
+                                </MudPaper>
+                            }
+
+                            @if (!_showCards)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-row my-2">
+                                    <MudImage Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/blue.svg" Width="100" Height="140" />
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudImage Width="100" Height="140" Src="@PlayerCard.Image"></MudImage>
+                            }
+
+                            @if (ListPossibleCards.Count > 0)
+                            {
+                                <MudPaper Elevation="0" Class="transparentPaper d-flex flex-row my-2">
+                                    @foreach (var card in ListPossibleCards)
+                                    {
+                                        <MudImage Class="playerCards mx-2" Src="@card.Image" @onclick="async() => await DanteRouletteGame(card.Value)" Width="100" Height="140"></MudImage>
+                                    }
+                                </MudPaper>
+                            }
+
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="transparentPaper d-flex flex-column justify-content-center align-items-center mb-4">
+                            <MudChip T="int" Style="color:white" Size="Size.Large">Your shots: @_playerShots</MudChip>
+                            <MudButton Class="game-button" Disabled="ListPossibleCards.Count != 0" Variant="Variant.Text" Size="Size.Medium" OnClick="CardPick">Draw Cards</MudButton>
+                        </MudPaper>
+                    }
+                    else
+                    {
+                        <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                    }
+                </MudContainer>
+            </MudHidden>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _gameBet = 700;
+    private int _gameProgressionLevel = 7;
+    private int _dealerShots = 6;
+    private int _playerShots = 6;
+    private bool _playGame = false;
+    private bool _pageLoading = true;
+    private bool _showCards = false;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "Heretic's Roulette—the perfect game. Each mistake, a new chance to get shot!";
+    private string _gameSessionToken;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private HereticsRouletteCardsDTO PlayerCard = new();
+    private HereticsRouletteCardsDTO DealerCard = new();
+    private List<HereticsRouletteCardsDTO> ListPossibleCards = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Hersey");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _demonMessage = "Heretic's Roulette—the perfect game. Each mistake, a new chance to get shot!";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+    }
+
+    public async void PlayGame()
+    {
+        _playGame = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task CardPick()
+    {
+        ListPossibleCards = await HerectisRouletteService.GetHereticsRouletteCardsAsync();
+
+        Random random = new Random();
+
+        int randomGuessCard = random.Next(1, ListPossibleCards.Count);
+        int randomDealerCard = random.Next(1, ListPossibleCards.Count);
+
+        PlayerCard = ListPossibleCards[randomGuessCard];
+        DealerCard = ListPossibleCards[randomDealerCard];
+    }
+
+    public async Task DanteRouletteGame(int value)
+    {
+        int indexGuessCard = ListPossibleCards.IndexOf(PlayerCard);
+        int indexDealer = ListPossibleCards.IndexOf(DealerCard);
+
+        HereticsRouletteCardsDTO userCard = ListPossibleCards.FirstOrDefault(card => card.Value == value);
+
+        int indexUserCard = ListPossibleCards.IndexOf(userCard);
+        int distanceDealer = Math.Abs(indexDealer - indexGuessCard);
+        int distanceUserCard = Math.Abs(indexUserCard - indexGuessCard);
+
+        _showCards = true;
+
+        if (distanceDealer > distanceUserCard)
+        {
+            Snackbar.Add("Dealer's card is further from the guessCard", Severity.Success);
+            _demonMessage = "I hope I die..";
+            await dealerLost();
+        }
+        else if (distanceUserCard > distanceDealer)
+        {
+            Snackbar.Add("User's selected card is further from the Guess Card,", Severity.Error);
+            _demonMessage = "Hmmm..I just love smell of fear";
+            await playerLost();
+        }
+        else
+        {
+            Snackbar.Add("Both cards are equidistant from the Guessed Card! Game resets", Severity.Info);
+            _demonMessage = "You got lucky...";
+            await GameReset();
+        }
+    }
+
+
+    public async Task dealerLost()
+    {
+        Random random = new();
+
+        int lowLimitDealer = 1;
+        int randomDealerShot = random.Next(lowLimitDealer, _dealerShots);
+
+        if (randomDealerShot == lowLimitDealer)
+        {
+            //GAME END - WIN
+            Snackbar.Add("Belphegor's death, you won", Severity.Success);
+            _demonMessage = "x";
+            //User won the game for the first time, achivement
+            if (UserModel.Level == 6)
+            {
+                Snackbar.Add("Your cards were closer than your bullets, but beware—the rings of high-ranking demons await you now.", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Hersey", _gameSessionToken);
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                await Task.Delay(1000);
+                NavigationManager.NavigateTo("/baal");
+                return;
+            }
+            _showCards = true;
+            await Task.Delay(2000);
+            await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Hersey", _gameSessionToken);
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+            newGame();
+        }
+        else
+        {
+            _dealerShots -= 1;
+            await GameReset();
+        }
+        _demonMessage = "Heretic's Roulette—the perfect game. Each mistake, a new chance to get shot!";
+    }
+
+    public async Task playerLost()
+    {
+        Random random = new();
+
+        int lowLimitPlayer = 1;
+        int randomPlayerShot = random.Next(lowLimitPlayer, _playerShots);
+
+        if (randomPlayerShot == lowLimitPlayer)
+        {
+            Snackbar.Add("Player's death, Belphegor won!");
+            _demonMessage = "Another one...";
+            await Task.Delay(2000);
+            newGame();
+        }
+        else
+        {
+            _playerShots -= 1;
+            await GameReset();
+        }
+    }
+
+    public async Task GameReset()
+    {
+        await Task.Delay(1000);
+        _showCards = false;
+        await CardPick();
+        _demonMessage = "Heretic's Roulette—the perfect game. Each mistake, a new chance to get shot!";
+    }
+
+    public async void newGame()
+    {
+        _playGame = false;
+        _dealerShots = 6;
+        _playerShots = 6;
+        _showCards = false;
+
+        PlayerCard = new();
+        DealerCard = new();
+        ListPossibleCards = new();
+
+        await GameReset();
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+
+}

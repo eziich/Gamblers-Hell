@@ -1,0 +1,144 @@
+﻿@page "/about"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Client.Services
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [AllowAnonymous]
+
+<PageTitle>About @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .about-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .content-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .inner-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+        padding: 1.5rem;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    .emphasis-text {
+        color: #ff9999;
+        font-weight: bold;
+    }
+
+    .divider {
+        background-color: #ff9999;
+        height: 2px;
+        opacity: 0.7;
+        margin: 2rem 0;
+    }
+</style>
+
+@if (_accountVerified == 0 && _id != 0 && UserModel != null)
+{
+    <VerificationNotificationComponent />
+}
+
+<MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-4">
+    <div class="about-container mb-4">
+        <MudText Typo="Typo.h2" Style="color:#ff9999" Class="mb-3 d-flex justify-content-center align-content-center title-text">ABOUT GAMBLER'S HELL</MudText>
+    </div>
+
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex flex-column align-items-center align-content-center justify-content-center my-4">
+        <MudCard Class="content-card d-flex flex-column align-items-center align-content-center justify-content-center my-4 pa-2" Style="background-color:#ff9999; width: 100%;">
+            <MudCard Class="inner-card pa-4" Style="width: 100%;">
+                <MudText Style="color:#ff9999" Class="mb-4" Align="Align.Center">
+                    Gambler's Hell is a web application inspired by the book <span class="emphasis-text"><i>"Inferno"</i></span> by Dante.
+                    The application consists of nine gambling games.
+                    The concept behind this collection of games is to win each one sequentially. Completing a game will unlock the next.
+                    Just like in the book <span class="emphasis-text"><i>"Inferno"</i></span>, the player must conquer all nine games, representing the nine circles of hell, in order to win.
+                    Each game has its own set of rules, which player can read in the rules section.
+                </MudText>
+
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.WarningAmber" Style="color:red" Class="emphasis-text my-3" Align="Align.Center">
+                    Disclaimer
+                    <br />
+                    <span class="emphasis-text my-2">
+                        Gambler's Hell is a fictional web application created for entertainment and enhancement of my coding skills.
+                        <br />
+                        Gambler's Hell is not affiliated with any real-life betting companies and does not involve real money or actual gambling transactions.
+                    </span>
+                </MudAlert>
+            </MudCard>
+        </MudCard>
+    </MudContainer>
+
+    <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+        <PageFooter />
+    </MudItem>
+</MudItem>
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; } = 0;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        try
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID))?.Value);
+                _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+                try
+                {
+                    UserModel = await UserService.GetUserByID(_id);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                _id = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+}

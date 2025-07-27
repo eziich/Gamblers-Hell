@@ -1,0 +1,31 @@
+﻿@using GamblersHell.Client.Pages
+@using GamblersHell.Client.Pages.Components
+
+<Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <Microsoft.AspNetCore.Components.Authorization.AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <Login />
+                </NotAuthorized>
+                <Authorizing>
+                    <style>
+                        body {
+                            background-image: linear-gradient(180deg, #000000, #000000, #000000, #000000, #000000, #1a0000, #3d0000, #1a0000, #000000, #000000);
+                        }
+                    </style>
+                    <MudContainer Class="d-flex align-content-center align-items-center justify-content-center">
+                        <GamblersHell.Client.Pages.Components.LoadingPageComponent />
+                    </MudContainer>
+                </Authorizing>
+            </Microsoft.AspNetCore.Components.Authorization.AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+
+            <LayoutView Layout="@typeof(MainLayout)">
+                <PageNotFound />
+            </LayoutView>
+        </NotFound>
+    </Router>
+</Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>

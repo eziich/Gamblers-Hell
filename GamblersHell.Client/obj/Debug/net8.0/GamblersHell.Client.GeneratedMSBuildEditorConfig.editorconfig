@@ -1,0 +1,210 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.MudDebugAnalyzer = 
+build_property.MudAllowedAttributePattern = 
+build_property.MudIllegalParameters = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = GamblersHell.Client
+build_property.RootNamespace = GamblersHell.Client
+build_property.ProjectDir = C:\Users\DT User\source\repos\GamblersHell\GamblersHell.Client\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\DT User\source\repos\GamblersHell\GamblersHell.Client
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/About.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWJvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/AccountVerification.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFZlcmlmaWNhdGlvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/AnticheatSite.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xBbnRpY2hlYXRTaXRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/BeastRacePicker.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xCZWFzdFJhY2VQaWNrZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/BetSetComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xCZXRTZXRDb21wb25lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/ChangePasswordDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xDaGFuZ2VQYXNzd29yZERpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/DealerRaiseComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xEZWFsZXJSYWlzZUNvbXBvbmVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/LoadingPageComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xMb2FkaW5nUGFnZUNvbXBvbmVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/PageFooter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xQYWdlRm9vdGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/PageNotFound.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xQYWdlTm90Rm91bmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/SatanThroneDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xTYXRhblRocm9uZURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/UserAlreadyVerifiedComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xVc2VyQWxyZWFkeVZlcmlmaWVkQ29tcG9uZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/UserNotVerifiedHellInteraction.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xVc2VyTm90VmVyaWZpZWRIZWxsSW50ZXJhY3Rpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Components/VerificationNotificationComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xWZXJpZmljYXRpb25Ob3RpZmljYXRpb25Db21wb25lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Asmodeus.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxBc21vZGV1cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Baal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxCYWFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Beelzebub.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxCZWVsemVidWIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Belial.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxCZWxpYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Belphegor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxCZWxwaGVnb3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Lilim.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxMaWxpbS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Mamoon.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxNYW1vb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Raum.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxSYXVtLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/DemonsLore/Satan.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb25zTG9yZVxTYXRhbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/ForgottenPassword.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRm9yZ290dGVuUGFzc3dvcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Fraud.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcRnJhdWQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Games.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcR2FtZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Gluttony.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcR2x1dHRvbnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Greed.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcR3JlZWQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Hersey.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcSGVyc2V5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Limbo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcTGltYm8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Lust.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcTHVzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Treachery.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcVHJlYWNoZXJ5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Violence.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcVmlvbGVuY2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Games/Wrath.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2FtZXNcV3JhdGgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/HellPig.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSGVsbFBpZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Profile.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZmlsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Rings.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmluZ3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Rulers.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUnVsZXJzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Pages/Rules.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUnVsZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-iay9513e5c
+
+[C:/Users/DT User/source/repos/GamblersHell/GamblersHell.Client/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-4qevsrtpyh

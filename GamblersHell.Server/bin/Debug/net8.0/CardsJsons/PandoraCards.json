@@ -1,0 +1,112 @@
+[
+  {
+    "ID": 1,
+    "Type": "Wrath",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraWrath.png"
+  },
+  {
+    "ID": 2,
+    "Type": "Wrath",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraWrath.png"
+  },
+  {
+    "ID": 3,
+    "Type": "Wrath",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraWrath.png"
+  },
+  {
+    "ID": 4,
+    "Type": "Gluttony",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGluttony.png"
+  },
+  {
+    "ID": 5,
+    "Type": "Gluttony",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGluttony.png"
+  },
+  {
+    "ID": 6,
+    "Type": "Gluttony",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGluttony.png"
+  },
+  {
+    "ID": 7,
+    "Type": "Greed",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGreed.png"
+  },
+  {
+    "ID": 8,
+    "Type": "Greed",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGreed.png"
+  },
+  {
+    "ID": 9,
+    "Type": "Greed",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraGreed.png"
+  },
+  {
+    "ID": 10,
+    "Type": "Envy",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraEnvy.png"
+  },
+  {
+    "ID": 11,
+    "Type": "Envy",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraEnvy.png"
+  },
+  {
+    "ID": 12,
+    "Type": "Envy",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraEnvy.png"
+  },
+  {
+    "ID": 13,
+    "Type": "Sloth",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraSloth.png"
+  },
+  {
+    "ID": 14,
+    "Type": "Sloth",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraSloth.png"
+  },
+  {
+    "ID": 15,
+    "Type": "Sloth",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraSloth.png"
+  },
+  {
+    "ID": 16,
+    "Type": "Pride",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraPride.png"
+  },
+  {
+    "ID": 17,
+    "Type": "Pride",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraPride.png"
+  },
+  {
+    "ID": 18,
+    "Type": "Pride",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraPride.png"
+  },
+  {
+    "ID": 19,
+    "Type": "Lust",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraLust.png"
+  },
+  {
+    "ID": 20,
+    "Type": "Lust",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraLust.png"
+  },
+  {
+    "ID": 21,
+    "Type": "Lust",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraLust.png"
+  },
+  {
+    "ID": 22,
+    "Type": "Hope",
+    "Picture": "/GamesComponents/PandoraComponents/PandoraHope.png"
+  }
+]

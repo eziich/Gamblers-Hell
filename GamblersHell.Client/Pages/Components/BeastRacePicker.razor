@@ -1,0 +1,159 @@
+﻿<MudDialog Style="min-width:75%; background-image: linear-gradient(180deg, #000000, #120d09, #1e0f0a, #2a1c12, #3f2a1a)">
+    <TitleContent>
+        <MudItem Class="d-flex justify-content-center align-content-center mb-2">
+            <MudText Style="color:white" Typo="Typo.h6">Pick your beast: </MudText>
+        </MudItem>
+    </TitleContent>
+    <DialogContent>
+        <MudItem Class="d-flex flex-column flex-md-row my-4">
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="100" Height="100" @onclick="() => SelectBeast(1)" Src="/GamesComponents/BeastRaceComponents/Beast1.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Revenant</MudText>
+                </MudContainer>
+            </MudContainer>
+
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+            </MudHidden>
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="100" Height="100" @onclick="() => SelectBeast(2)" Src="/GamesComponents/BeastRaceComponents/Beast2.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Agony</MudText>
+                </MudContainer>
+            </MudContainer>
+
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+            </MudHidden>
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="100" Height="100" @onclick="() => SelectBeast(3)" Src="/GamesComponents/BeastRaceComponents/Beast3.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Arachna</MudText>
+                </MudContainer>
+            </MudContainer>
+
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+            </MudHidden>
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="100" Height="100" @onclick="() => SelectBeast(4)" Src="/GamesComponents/BeastRaceComponents/Beast4.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Yurei</MudText>
+                </MudContainer>
+            </MudContainer>
+
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+            </MudHidden>
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="90" Height="100" @onclick="() => SelectBeast(5)" Src="/GamesComponents/BeastRaceComponents/Beast5.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Watcher</MudText>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudPopover Open="_open" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Paper="false">
+                            <MudPaper Outlined="true" Class="px-4 py-8">
+                                <MudText>Pick me and I will make it up to you!</MudText>
+                            </MudPaper>
+                        </MudPopover>
+                    </MudHidden>
+                </MudContainer>
+            </MudContainer>
+
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+            </MudHidden>
+
+            <MudContainer Class="d-flex justify-content-center align-content-center flex-column">
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage Width="100" Height="100" @onclick="() => SelectBeast(6)" Src="/GamesComponents/BeastRaceComponents/Beast6.gif"></MudImage>
+                </MudContainer>
+                <MudContainer Class="d-flex justify-content-center align-content-center mt-4">
+                    <MudText Style="color:white" Typo="Typo.h6">Balerina</MudText>
+                </MudContainer>
+            </MudContainer>
+
+        </MudItem>
+    </DialogContent>
+
+    <DialogActions>
+        <MudContainer Class="d-flex justify-content-center align-content-center mb-2 flex-column">
+            <MudText Style="color:white" Class="d-flex justify-content-center align-content-center">Selected beast:</MudText>
+            @if (_selectedBeast == 0)
+            {
+                <MudAlert Style="color:red" Severity="Severity.Warning">Beast must be chosen in order to play</MudAlert>
+            }
+            else if (_selectedBeast == 1)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center mb-2"><span><b> Revenant</b></span> </MudText>
+            }
+            else if (_selectedBeast == 2)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center mb-2"><span><b> Agony</b></span> </MudText>
+            }
+
+            else if (_selectedBeast == 3)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center mb-2"><span><b> Arachna</b></span> </MudText>
+            }
+
+            else if (_selectedBeast == 4)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center mb-2"><span><b> Yurei</b></span> </MudText>
+            }
+
+            else if (_selectedBeast == 5)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center mb-2"><span><b> Watcher</b></span> </MudText>
+            }
+
+            else if (_selectedBeast == 6)
+            {
+                <MudText Style="color:white" Class="d-flex justify-content-center align-content-center"><span><b>Balerina</b></span> </MudText>
+            }
+            <MudButton Class="mx-2" Style="color:white" Disabled="_selectedBeast == 0" OnClick="Submit">Play</MudButton>
+        </MudContainer>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    public int _selectedBeast = 0;
+    private bool _open = false;
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(_selectedBeast));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await WatcherMessage();
+    }
+
+    private void SelectBeast(int beastNumber)
+    {
+        _selectedBeast = beastNumber;
+    }
+
+    public async Task WatcherMessage()
+    {
+        await Task.Delay(2500);
+        _open = true;
+    }
+}
+

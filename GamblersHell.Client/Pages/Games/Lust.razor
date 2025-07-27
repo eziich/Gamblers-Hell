@@ -1,0 +1,566 @@
+﻿@page "/lust"
+@using GamblersHell.Models
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Shared;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject UserService UserService
+@inject LadyService LadyService
+@inject TransactionService TransactionService
+@inject NavMenuState NavMenuState
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Lust @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #ff9999 !important;
+    }
+
+    .chosenCard {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        border-radius: 8px;
+    }
+
+        .chosenCard:hover {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6));
+    }
+
+    .game-button {
+        background-color: #3d0000 !important;
+        color: #ff9999 !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ff5555 !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #5d0000 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #ff0000, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    }
+
+    .score-chip {
+        background-color: #3d0000 !important;
+        border: 1px solid #ff5555 !important;
+        color: #ff9999 !important;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        font-family: 'Cinzel', serif;
+    }
+
+    .cards-container {
+        background: rgba(10, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .playerCards {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        border-radius: 8px;
+    }
+
+        .playerCards:hover {
+            transform: translateY(-5px) scale(1.06);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+
+    .card-text {
+        font-family: 'Cinzel', serif;
+        color: #ff9999 !important;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 2)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+            @*Mobile Version*@
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h4">The Lady</MudText>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#3d0000 !important" Arrow="true">
+                                    <MudImage Class="demon" Src="Demons/Lust.png" Width="200" Height="200"></MudImage>
+                                </MudTooltip>
+                            </MudPaper>
+
+                            @if (_playGame)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center mb-4 transparentPaper">
+                                    <MudChip Size="Size.Small" Class="score-chip" T="string">Asmodesus score: @_numberWinsDealer</MudChip>
+                                    <MudChip Size="Size.Small" Class="score-chip ml-1" T="string">Asmodeus card count: @DealerCards.Count</MudChip>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-wrap justify-content-center align-items-center my-4 cards-container">
+                                    @if (DealerCards.Count > 0)
+                                    {
+                                        foreach (var card in DealerCards)
+                                        {
+                                            if (_allCardCounter)
+                                            {
+                                                <MudButton @onclick="CardSwitch" Disabled="!_enableSwitch">
+                                                    <MudImage Class="chosenCard" Width="60" Height="90" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg"></MudImage>
+                                                </MudButton>
+                                            }
+                                            else
+                                            {
+                                                <MudImage Class="mx-1" Width="60" Height="90" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg"></MudImage>
+                                            }
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudChip Size="Size.Small" Color="Color.Error" Class="score-chip" T="string">Deck count: @ListAllCards.Count</MudChip>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-wrap justify-content-center align-items-center my-4 cards-container">
+                                    @if (PlayerCards.Count > 0)
+                                    {
+                                        foreach (var card in PlayerCards)
+                                        {
+                                            <MudImage Class="mx-1 my-1 playerCards" Width="60" Height="90" Src="@card.Picture"></MudImage>
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center mb-4 transparentPaper">
+                                    <MudChip Size="Size.Small" Class="score-chip" T="string">Your score: @_numberWinsPlayer</MudChip>
+                                    <MudButton Color="Color.Inherit" Size="Size.Small" Class="game-button mx-1" @onclick="DrawCards">Draw</MudButton>
+                                    <MudChip Size="Size.Small" Class="score-chip" T="string">Your card count: @PlayerCards.Count</MudChip>
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                            }
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudHidden>
+
+            @*PC Version*@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h3">The Lady</MudText>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#3d0000 !important" Arrow="true">
+                                    <MudImage Class="demon" Src="Demons/Lust.png" Width="250" Height="250"></MudImage>
+                                </MudTooltip>
+                            </MudPaper>
+
+                            @if (_playGame)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center mb-4 transparentPaper">
+                                    <MudChip Size="Size.Large" Class="score-chip" T="string">Asmodesus score: @_numberWinsDealer</MudChip>
+                                    <MudChip Size="Size.Large" Class="score-chip ml-1" T="string">Asmodeus card count: @DealerCards.Count</MudChip>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 cards-container">
+                                    @if (DealerCards.Count > 0)
+                                    {
+                                        foreach (var card in DealerCards)
+                                        {
+                                            if (_allCardCounter)
+                                            {
+                                                <MudButton @onclick="CardSwitch" Disabled="!_enableSwitch">
+                                                    <MudImage Class="chosenCard" Width="100" Height="140" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg"></MudImage>
+                                                </MudButton>
+                                            }
+                                            else
+                                            {
+                                                <MudImage Class="mx-1" Width="100" Height="140" Src="https://tekeye.uk/playing_cards/images/svg_playing_cards/backs/red.svg"></MudImage>
+                                            }
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudChip Size="Size.Large" Color="Color.Error" Class="score-chip" T="string">Deck count: @ListAllCards.Count</MudChip>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center my-4 cards-container">
+                                    @if (PlayerCards.Count > 0)
+                                    {
+                                        foreach (var card in PlayerCards)
+                                        {
+                                            <MudImage Class="mx-1 playerCards" Width="100" Height="140" Src="@card.Picture"></MudImage>
+                                        }
+                                    }
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-items-center mb-4 transparentPaper">
+                                    <MudChip Size="Size.Large" Class="score-chip" T="string">Your score: @_numberWinsPlayer</MudChip>
+                                    <MudButton Color="Color.Inherit" Class="game-button mx-1" @onclick="DrawCards">Draw</MudButton>
+                                    <MudChip Size="Size.Large" Class="score-chip" T="string">Your card count: @PlayerCards.Count</MudChip>
+                                </MudPaper>
+                            }
+                            else
+                            {
+                                <MudButton Class="game-button" Disabled="UserModel.Balance < _gameBet" Variant="Variant.Filled" @onclick="() => PlayGame()">Play</MudButton>
+                            }
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudHidden>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _gameBet = 100;
+    private int _gameProgressionLevel = 3;
+    private int _numberWinsPlayer = 0;
+    private int _numberWinsDealer = 0;
+    private bool _playGame = false;
+    private bool _enableSwitch = true;
+    private bool _pageLoading = true;
+    private bool _allCardCounter => ListAllCards.Count == 0;
+    private bool _playerCardCounter => PlayerCards.Count == 0;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "Did you get her card?";
+    private string _gameSessionToken;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private List<LadyCardsDTO> ListAllCards = new List<LadyCardsDTO>(53);
+    private List<LadyCardsDTO> DealerCards = new();
+    private List<LadyCardsDTO> PlayerCards = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Lust");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "Did you get her card?";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+
+        await Task.Delay(100);
+        await GetAllCards();
+    }
+
+    public async void PlayGame()
+    {
+        _playGame = true;
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    public async Task GetAllCards()
+    {
+        ListAllCards = await LadyService.GetLadyCardsAsync();
+        StateHasChanged();
+    }
+
+    public async Task DrawCardsDealer()
+    {
+        await DrawCardsPlayer("dealer");
+    }
+
+    public async Task DrawCards()
+    {
+        await DrawCardsPlayer("player");
+        await Task.Delay(500);
+        await DrawCardsPlayer("dealer");
+    }
+
+    public async Task DrawCardsPlayer(string playerPick)
+    {
+        var drawnCard = await LadyService.GetRandomCardAsync();
+
+        if (ListAllCards.Any(card => card.ID == drawnCard.ID))
+        {
+            if (playerPick == "dealer")
+            {
+                if (DealerCards.Any(card => card.ID == drawnCard.ID) || PlayerCards.Any(card => card.ID == drawnCard.ID))
+                {
+                    await DrawCardsPlayer("dealer");
+                }
+                else
+                {
+                    var existingCard = DealerCards.FirstOrDefault(card => card.Number == drawnCard.Number);
+                    if (existingCard != null)
+                    {
+                        DealerCards.Remove(existingCard);
+                        ListAllCards.Remove(drawnCard);
+                    }
+                    else
+                    {
+                        DealerCards.Add(drawnCard);
+                    }
+                }
+            }
+            else if (playerPick == "player")
+            {
+                if (DealerCards.Any(card => card.ID == drawnCard.ID) || PlayerCards.Any(card => card.ID == drawnCard.ID))
+                {
+                    await DrawCardsPlayer("player");
+                }
+                else
+                {
+                    var existingCard = PlayerCards.FirstOrDefault(card => card.Number == drawnCard.Number);
+                    if (existingCard != null)
+                    {
+                        PlayerCards.Remove(existingCard);
+                        ListAllCards.Remove(drawnCard);
+                    }
+                    else
+                    {
+                        PlayerCards.Add(drawnCard);
+                    }
+                }
+            }
+
+            ListAllCards.RemoveAll(card => card.ID == drawnCard.ID);
+            StateHasChanged();
+
+        }
+        else
+        {
+            await DrawCardsPlayer(playerPick);
+        }
+    }
+
+    public async Task CardSwitch()
+    {
+        // Prevent further interaction if switching is not enabled
+        if (!_enableSwitch)
+        {
+            return;
+        }
+
+        // Disable switching immediately after the player chooses a card
+        _enableSwitch = false;
+
+        Random random = new Random();
+
+        // Player's turn to switch a card
+        int randomCardPlayer = random.Next(0, DealerCards.Count);
+        var chosenCardPlayer = DealerCards[randomCardPlayer];
+
+        PlayerCards.Add(chosenCardPlayer);
+        DealerCards.Remove(chosenCardPlayer);
+
+        var cardPlayer = PlayerCards.FirstOrDefault(card => card.Number == chosenCardPlayer.Number);
+
+        if (cardPlayer != null && cardPlayer.Number == "Lady")
+        {
+            DealerCards.Remove(cardPlayer);
+        }
+        else
+        {
+            if (cardPlayer != null)
+            {
+                PlayerCards.Remove(chosenCardPlayer);
+                PlayerCards.Remove(cardPlayer);
+            }
+        }
+
+        // Handle the game state after the player's switch
+        if (!_playerCardCounter)
+        {
+            // Simulate a delay before dealer switches
+            await Task.Delay(1000);
+
+            // Dealer's turn to switch a card
+            int randomCardDealer = random.Next(0, PlayerCards.Count);
+            var chosenCardDealer = PlayerCards[randomCardDealer];
+
+            DealerCards.Add(chosenCardDealer);
+            PlayerCards.Remove(chosenCardDealer);
+
+            var cardDealer = DealerCards.FirstOrDefault(card => card.Number == chosenCardDealer.Number);
+
+            if (cardDealer != null && cardDealer.Number == "Lady")
+            {
+                PlayerCards.Remove(cardDealer);
+            }
+            else
+            {
+                if (cardDealer != null)
+                {
+                    DealerCards.Remove(chosenCardDealer);
+                    DealerCards.Remove(cardDealer);
+                }
+            }
+
+            // Check the end of the round
+            if (PlayerCards.Count == 0)
+            {
+                Snackbar.Add("You won the round! Shuffling...", Severity.Success);
+                _demonMessage = "Pure luck...";
+                _numberWinsPlayer += 1;
+                await GameReset();
+            }
+            else if (DealerCards.Count == 0)
+            {
+                Snackbar.Add("Asmodeus won the round! Shuffling...", Severity.Error);
+                _demonMessage = "Obsession...I mean love.. it never truly dies, does it?";
+                _numberWinsDealer += 1;
+                await GameReset();
+            }
+        }
+        else
+        {
+            // If player wins the round because dealer has no cards
+            Snackbar.Add("You won the round! Shuffling...", Severity.Success);
+            _demonMessage = "Pure luck...";
+            _numberWinsPlayer += 1;
+            await GameReset();
+        }
+
+        // Check if the game is over (3 wins for either player)
+        if (_numberWinsDealer >= 3 && _numberWinsDealer > _numberWinsPlayer)
+        {
+            Snackbar.Add("Asmodeus won the game!", Severity.Error);
+            _demonMessage = "HAHAHAA!";
+            await Task.Delay(1000);
+            await OnInitializedAsync();
+            _playGame = false;
+        }
+        else if (_numberWinsPlayer >= 3 && _numberWinsPlayer > _numberWinsDealer)
+        {
+            Snackbar.Add("You won the game!", Severity.Success);
+            _demonMessage = "Impossible!";
+            //User won the game for the first time, achivement
+            if (UserModel.Level == 2)
+            {
+                Snackbar.Add("Lilim's card has favored you this time, but soon enough, you'll have to face her deceit.", Severity.Error, config =>
+                   {
+                       config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                       config.IconColor = Color.Inherit;
+                       config.IconSize = Size.Large;
+                   });
+                await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Lust", _gameSessionToken);
+                NavMenuState.RefreshNavMenu();
+                StateHasChanged();
+                await Task.Delay(1000);
+                NavigationManager.NavigateTo("/beelzebub");
+                return;
+            }
+            await TransactionService.GameWonTransaction(_id, _gameBet, _gameProgressionLevel, "Lust", _gameSessionToken);
+            await OnInitializedAsync();
+            _playGame = false;
+            NavMenuState.RefreshNavMenu();
+            StateHasChanged();
+        }
+
+        // Re-enable switching after dealer's turn is complete
+        _enableSwitch = true;
+    }
+
+    public async Task GameReset()
+    {
+        DealerCards.Clear();
+        PlayerCards.Clear();
+        ListAllCards.Clear();
+        _demonMessage = "Did you get her card?";
+        await OnInitializedAsync();
+    }
+}
+
+

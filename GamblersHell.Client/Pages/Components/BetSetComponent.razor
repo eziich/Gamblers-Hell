@@ -1,0 +1,112 @@
+﻿<MudDialog Style="background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%);background-attachment: fixed;background-size: cover;">
+    <TitleContent>
+        <MudContainer Class="d-flex justify-content-center align-content-center align-items-center flex-column mb-2">
+            <MudText Style="color:white" Typo="Typo.h6">Set your bet:</MudText>
+        </MudContainer>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Class="d-flex flex-column my-4">
+
+            <MudContainer Class="d-flex flex-row">
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip50 Src="/Chips/Chip50.png"></MudImage>
+                </MudContainer>
+
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip100 Src="/Chips/Chip100.png"></MudImage>
+                </MudContainer>
+
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip500 Src="/Chips/Chip500.png"></MudImage>
+                </MudContainer>
+
+            </MudContainer>
+
+            <MudDivider Class="my-4" Style="height:2px; width:100%"></MudDivider>
+
+            <MudContainer Class="d-flex flex-row">
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip1000 Src="/Chips/Chip1000.png"></MudImage>
+                </MudContainer>
+
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip5000 Src="/Chips/Chip5000.png"></MudImage>
+                </MudContainer>
+
+                <MudDivider Vertical="true" Style="height:100px; width:2px"></MudDivider>
+
+                <MudContainer Class="d-flex justify-content-center align-content-center">
+                    <MudImage @onclick=Chip10000 Src="/Chips/Chip10000.png"></MudImage>
+                </MudContainer>
+
+            </MudContainer>
+
+        </MudContainer>
+
+        <MudContainer Class="d-flex justify-content-center align-content-center my-4">
+            <MudText Style="color:white" Typo="Typo.h6">Current bet: @_bet$</MudText>
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudContainer Class="d-flex justify-content-center align-content-center mb-2">
+            <MudButton Class="mx-2" Style="color:red" OnClick="Cancel">Cancel</MudButton>
+            <MudButton Class="mx-2" Style="color:white" OnClick="Clear">Reset bet</MudButton>
+            <MudButton Class="mx-2" Style="color:green" OnClick="Submit">Set bet</MudButton>
+        </MudContainer>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private void Submit() => MudDialog.Close(DialogResult.Ok(_bet));
+    private void Cancel() => MudDialog.Cancel();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Clear()
+    {
+        _bet = 50;
+    }
+
+    int _bet = 50;
+
+    public void Chip50()
+    {
+        _bet = _bet + 50;
+    }
+
+    public void Chip100()
+    {
+        _bet = _bet + 100;
+    }
+
+    public void Chip500()
+    {
+        _bet = _bet + 500;
+    }
+
+    public void Chip1000()
+    {
+        _bet = _bet + 1000;
+    }
+
+    public void Chip5000()
+    {
+        _bet = _bet + 5000;
+    }
+
+    public void Chip10000()
+    {
+        _bet = _bet + 10000;
+    }
+}

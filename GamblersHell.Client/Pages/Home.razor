@@ -1,0 +1,441 @@
+﻿@page "/"
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Models
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [AllowAnonymous]
+
+<PageTitle>Home @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .subtitle-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+        color: #ff9999;
+        font-size: 40px;
+    }
+
+    .hell-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border: 1px solid #ff6666;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+        .hell-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+    .step-number {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #3d0000;
+        color: #ff9999;
+        font-weight: bold;
+        margin-right: 10px;
+        border: 1px solid #ff6666;
+    }
+
+    .eye-icon {
+        min-height: 300px;
+        min-width: 300px;
+        font-size: 100px;
+        animation: glow 3s infinite alternate;
+    }
+
+    .list-item {
+        background-image: linear-gradient(90deg, #000000, #1a0000, #3d0000);
+        color: #ff9999;
+        border: 1px solid #5a0000;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 1rem;
+    }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+
+    .data-grid {
+        background-image: linear-gradient(180deg, #1a0000, #3d0000, #2e0101, #1a0000);
+        border: 1px solid #5a0000;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .latin-quote {
+        font-family: 'Cinzel', serif;
+        color: #ff9999;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        animation: glow 3s infinite alternate;
+    }
+
+    .quote-container {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .demon-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+</style>
+
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0 && _id != 0 && UserModel != null)
+    {
+        <VerificationNotificationComponent />
+    }
+
+    @* Main Logo *@
+    <MudPaper Elevation="0" Class="d-flex justify-content-center align-content-center align-items-center" Style="background-color:transparent !important; min-width:100%; height:75px">
+        <MudImage Src="MainLogo.png" Height=75 ObjectFit="ObjectFit.Contain" />
+    </MudPaper>
+
+    <MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+    @*Main Carousel*@
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <MudCarousel Class="mud-width-full" Style="height:600px;" ShowArrows="@_arrowsTicket" ShowBullets="@_bulletsTicket" EnableSwipeGesture="@_enableSwipeGestureTicket" AutoCycle="@_autocycleTicket" TData="object">
+            <MudCarouselItem class="d-flex justify-content-center align-items-center" Transition="_transitionTicket" Style="background-color:black">
+                <MudImage Src="HomeComponents/MainCarousel1.png"
+                          style="width:100%;height:auto; filter: contrast(1.2) saturate(1.2);"
+                          ObjectFit="ObjectFit.ScaleDown" />
+            </MudCarouselItem>
+            <MudCarouselItem class="d-flex justify-content-center align-items-center" Transition="_transitionTicket" Style="background-color:black">
+                <MudImage Src="HomeComponents/MainCarousel2.png"
+                          style="width:100%;height:auto; filter: contrast(1.2) saturate(1.2);"
+                          ObjectFit="ObjectFit.ScaleDown" />
+            </MudCarouselItem>
+            <MudCarouselItem class="d-flex justify-content-center align-items-center" Transition="_transitionTicket" Style="background-color:black">
+                <MudImage Src="HomeComponents/MainCarousel3.png"
+                          style="width:100%;height:auto; filter: contrast(1.2) saturate(1.2);"
+                          ObjectFit="ObjectFit.ScaleDown" />
+            </MudCarouselItem>
+        </MudCarousel>
+
+        <MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+    </MudHidden>
+
+    <MudText Typo="Typo.h2" Class="d-flex justify-content-center my-6 subtitle-text">BEGIN YOUR DESCENT</MudText>
+
+    @* Three Steps with Enhanced Cards *@
+    <MudContainer MaxWidth="MaxWidth.Large" Class="my-6">
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <MudCard Elevation="3" Class="hell-card h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <div class="d-flex">
+                                <div class="step-number">1</div>
+                                <MudText Typo="Typo.h6" Style="color: #ff9999; text-transform: uppercase; letter-spacing: 1px;">Enter Hell</MudText>
+                            </div>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="d-flex flex-column align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Login" Size="Size.Large" Color="Color.Error" Class="mb-4 demon-float" />
+                        <MudText Typo="Typo.body2" Style="color: #ff9999; text-align: center;">
+                            Register or login to begin your infernal journey. Choose your path wisely, for there's no turning back.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="4">
+                <MudCard Elevation="3" Class="hell-card h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <div class="d-flex">
+                                <div class="step-number">2</div>
+                                <MudText Typo="Typo.h6" Style="color: #ff9999; text-transform: uppercase; letter-spacing: 1px;">Battle Demons</MudText>
+                            </div>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="d-flex flex-column align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Casino" Size="Size.Large" Color="Color.Error" Class="mb-4 demon-float" />
+                        <MudText Typo="Typo.body2" Style="color: #ff9999; text-align: center;">
+                            Challenge the demonic guardians of each ring through games of chance and skill. Win to progress deeper into the abyss.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="4">
+                <MudCard Elevation="3" Class="hell-card h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <div class="d-flex">
+                                <div class="step-number">3</div>
+                                <MudText Typo="Typo.h6" Style="color: #ff9999; text-transform: uppercase; letter-spacing: 1px;">Claim the Throne</MudText>
+                            </div>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="d-flex flex-column align-center">
+                        <MudIcon Icon="@Icons.Custom.Uncategorized.ChessKing" Size="Size.Large" Color="Color.Error" Class="mb-4 demon-float" />
+                        <MudText Typo="Typo.body2" Style="color: #ff9999; text-align: center;">
+                            Win eight circles to challenge Lucifer himself. Victory will crown you as the new ruler of the underworld.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+    <MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+    @* Top Ruler's and User's Grid *@
+    <MudPaper Elevation="0" Class="d-flex flex-column flex-md-row" Style="background-color:transparent">
+        @* Top Rulers Grid *@
+        <MudContainer>
+            <MudContainer Class="d-flex align-items-center justify-content-center my-2">
+                <MudIcon Class="mx-2" Icon="@Icons.Custom.Uncategorized.ChessKing" Size="Size.Large" Color="Color.Error"></MudIcon>
+                <MudText Typo="Typo.h6" Class="title-text">Top 5 Rulers</MudText>
+            </MudContainer>
+
+            <MudDataGrid Items="@TopFiveRulersList" Class="data-grid" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+                <Columns>
+                    <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.Username" Title="Username" />
+                    <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.FirstName" Title="First Name" />
+                    <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.LastName" Title="Last Name" />
+                    <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.BalanceAfterWin" Title="Ruler Balance" />
+                </Columns>
+            </MudDataGrid>
+        </MudContainer>
+
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            @* Top Gentlemens Grid (didn't win) *@
+            <MudContainer>
+                <MudContainer Class="d-flex align-items-center justify-content-center my-2">
+                    <MudIcon Class="mx-2" Icon="@Icons.Material.Filled.Groups3" Size="Size.Large" Color="Color.Error"></MudIcon>
+                    <MudText Typo="Typo.h6" Class="title-text">Top 5 Gentlemen</MudText>
+                </MudContainer>
+
+                <MudDataGrid Items="@TopFiveGentlemenList" Class="data-grid" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+                    <Columns>
+                        <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.FirstName" Title="First Name" />
+                        <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.LastName" Title="Last Name" />
+                        <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.Username" Title="Username" />
+                        <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.Balance" Title="Current Balance" />
+                        <PropertyColumn CellStyle="background-color:black; color:#ff9999" Property="x => x.Level" Title="Current Level" />
+                    </Columns>
+                </MudDataGrid>
+            </MudContainer>
+        </MudHidden>
+    </MudPaper>
+
+    @* Latin "I am watching you" quote *@
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+
+        <MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+        <!-- Latin Quote Section - Enhanced -->
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-8">
+            <MudPaper Elevation="3" Style="background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000); border: 1px solid #ff6666; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); padding: 40px 20px;" Class="text-center">
+                <MudContainer Class="quote-container">
+                    <MudText Class="latin-quote" Typo="Typo.h4">"ego sum spectans te"</MudText>
+                    <MudContainer>
+                        <span style="min-height:300px; min-width:300px" class="eye-icon">👁️</span>
+                    </MudContainer>
+                    <MudText Typo="Typo.subtitle1" Style="color: #ff6666; margin-top: 16px; font-style: italic; text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">
+                        "I am watching you"
+                    </MudText>
+                </MudContainer>
+            </MudPaper>
+        </MudContainer>
+    </MudHidden>
+
+    <MudDivider Class="my-4" Style="background-color: #5a0000;" />
+
+    @* Five points *@
+    <MudItem xs="12" sm="12" md="12" Class="my-4">
+        <MudPaper Class="list-item pa-4 d-flex flex-row">
+            <MudContainer Class="d-flex flex-column">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">The Nine Rings</MudText>
+                <MudText Style="color: #ff6666;">Explanations of each ring of Hell and the demon that rules it</MudText>
+            </MudContainer>
+
+            <MudSpacer />
+
+            <MudContainer Class="d-flex align-content-center align-items-center justify-content-end">
+                <MudIcon Icon="@Icons.Material.Filled.Cyclone" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12" Class="my-4">
+        <MudPaper Class="list-item pa-4 d-flex flex-row">
+            <MudContainer Class="d-flex flex-column">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Games</MudText>
+                <MudText Style="color: #ff6666;">Win each game to earn rewards and progress through the rings of Hell</MudText>
+            </MudContainer>
+
+            <MudSpacer />
+
+            <MudContainer Class="d-flex align-content-center align-items-center justify-content-end">
+                <MudIcon Icon="@Icons.Material.Filled.Casino" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12" Class="my-4">
+        <MudPaper Class="list-item pa-4 d-flex flex-row">
+            <MudContainer Class="d-flex flex-column">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Rulers</MudText>
+                <MudText Style="color: #ff6666;">Check the list of top players</MudText>
+            </MudContainer>
+
+            <MudSpacer />
+
+            <MudContainer Class="d-flex align-content-center align-items-center justify-content-end">
+                <MudIcon Icon="@Icons.Custom.Uncategorized.ChessKing" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12" Class="my-4">
+        <MudPaper Class="list-item pa-4 d-flex flex-row">
+            <MudContainer Class="d-flex flex-column">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Hell Pig</MudText>
+                <MudText Style="color: #ff6666;">Get daily rewards</MudText>
+            </MudContainer>
+
+            <MudSpacer />
+
+            <MudContainer Class="d-flex align-content-center align-items-center justify-content-end">
+                <MudIcon Icon="@Icons.Material.Filled.Savings" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12" Class="my-4">
+        <MudPaper Class="list-item pa-4 d-flex flex-row">
+            <MudContainer Class="d-flex flex-column">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Rules</MudText>
+                <MudText Style="color: #ff6666;">A page where players can read the rules for each game</MudText>
+            </MudContainer>
+
+            <MudSpacer />
+
+            <MudContainer Class="d-flex align-content-center align-items-center justify-content-end">
+                <MudIcon Icon="@Icons.Material.Filled.Flaky" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+
+    @*Footer*@
+    <PageFooter />
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private bool _pageLoading = true;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private bool _arrowsMain = false;
+    private bool _bulletsMain = false;
+    private bool _enableSwipeGestureMain = false;
+    private bool _autocycleMain = false;
+    private Transition _transitionMain = Transition.None;
+
+    private bool _arrowsTicket = true;
+    private bool _bulletsTicket = true;
+    private bool _enableSwipeGestureTicket = true;
+    private bool _autocycleTicket = true;
+    private Transition _transitionTicket = Transition.Slide;
+
+    public List<TopFiveRulersDTO> TopFiveRulersList = new List<TopFiveRulersDTO>();
+    public List<TopFiveGentlemenDTO> TopFiveGentlemenList = new List<TopFiveGentlemenDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        try
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID))?.Value);
+                _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+                try
+                {
+                    UserModel = await UserService.GetUserByID(_id);
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                _id = 0;
+            }
+
+            TopFiveRulersList = await UserService.TopFiveRulers();
+            TopFiveGentlemenList = await UserService.TopFiveGentlemen();
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+        _pageLoading = false;
+        StateHasChanged();
+    }
+}

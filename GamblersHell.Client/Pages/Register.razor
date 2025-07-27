@@ -1,0 +1,337 @@
+﻿@page "/register"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+@attribute [AllowAnonymous]
+
+<PageTitle>Register @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<style>
+    body {
+        background-image: linear-gradient(135deg, #000000, #0a0000, #1a0000, #2d0000, #3d0000, #2d0000, #1a0000, #0a0000, #000000);
+    }
+
+    .register-card {
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .form-container {
+        background-color: rgba(25, 25, 25, 0.95);
+        border-radius: 0 0 16px 16px;
+        padding: 24px 32px;
+    }
+
+    .logo-container {
+        background-color: rgba(20, 20, 20, 0.95);
+        padding: 24px 0;
+    }
+
+    .form-field {
+        margin-bottom: 16px;
+    }
+
+    .field-caption {
+        margin-top: -12px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+        color: #ff3333;
+    }
+
+    /* Override MudBlazor field styles for dark theme */
+    ::deep .mud-input {
+        color: #ff3333 !important;
+    }
+
+    ::deep .mud-input-label {
+        color: #ff3333 !important;
+        background-color: transparent !important;
+    }
+
+    ::deep .mud-input-label-outlined {
+        background-color: rgba(25, 25, 25, 0.95) !important;
+        padding: 0 5px;
+    }
+
+    ::deep .mud-input-outlined {
+        border-color: rgba(255, 0, 0, 0.5) !important;
+    }
+
+        ::deep .mud-input-outlined:hover {
+            border-color: #ff3333 !important;
+        }
+
+        ::deep .mud-input-outlined:focus-within {
+            border-color: #ff0000 !important;
+        }
+
+            ::deep .mud-input-outlined:focus-within .mud-input-label {
+                color: #ff0000 !important;
+            }
+
+    ::deep .mud-divider {
+        background-color: rgba(255, 0, 0, 0.3) !important;
+    }
+
+    /* Placeholder text color */
+    ::deep .mud-input::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+        opacity: 1;
+    }
+
+    ::deep .mud-input:-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    ::deep .mud-input::-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+</style>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex justify-center align-center" Style="min-height: 100vh; padding: 24px;">
+    <MudPaper Class="register-card" Style="width: 100%;">
+        <MudContainer Class="logo-container d-flex flex-column justify-content-center align-items-center">
+            <MudImage ObjectFit="ObjectFit.Contain" Src="MainLogo.png" Width="150" Height="150" Class="mb-3" />
+            <MudText Typo="Typo.h4" Style="color:#ff0000; font-weight: 600;" Class="mb-2">Register</MudText>
+            <MudText Typo="Typo.subtitle1" Style="color:#ff3333; opacity: 0.8;">Start your hellish journey</MudText>
+        </MudContainer>
+
+        <MudContainer Class="form-container">
+            <EditForm Model="@UserModel" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      Placeholder="Enter your username"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="UserModel.Username"
+                                      For="@(() => UserModel.Username)"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Person"
+                                      AdornmentColor="Color.Error" />
+                        <MudText Typo="Typo.caption" Class="field-caption">Max. 20 characters</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      Placeholder="Enter your email"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="UserModel.Email"
+                                      For="@(() => UserModel.Email)"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Email"
+                                      AdornmentColor="Color.Error" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      Placeholder="Enter your first name"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="UserModel.FirstName"
+                                      For="@(() => UserModel.FirstName)"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Badge"
+                                      AdornmentColor="Color.Error" />
+                        <MudText Typo="Typo.caption" Class="field-caption">Max. 15 characters</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      Placeholder="Enter your last name"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="UserModel.LastName"
+                                      For="@(() => UserModel.LastName)"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Badge"
+                                      AdornmentColor="Color.Error" />
+                        <MudText Typo="Typo.caption" Class="field-caption">Max. 20 characters</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      Placeholder="Choose a password"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="UserModel.Password"
+                                      For="@(() => UserModel.Password)"
+                                      InputType="showPasswordAction()"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Lock"
+                                      AdornmentColor="Color.Error">
+                        </MudTextField>
+                        <MudTooltip Style="background-color:red" Text="@(_showPassword ? "Hide password" : "Show password")">
+                            <MudIconButton Icon="@(_showPassword ? @Icons.Material.Filled.VisibilityOff : @Icons.Material.Filled.Visibility)" Color="Color.Error" @onclick="() => showPasswordButton()"></MudIconButton>
+                        </MudTooltip>
+                        <MudText Typo="Typo.caption" Class="field-caption">Choose a strong password</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Class="form-field"
+                                      @ref=@_passwordField
+                                      Placeholder="Repeat your password"
+                                      Style="color:white"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_repeatPassword"
+                                      For="@(() => UserModel.Password)"
+                                      InputType="showRepeatPasswordAction()"
+                                      Adornment="Adornment.Start"
+                                      Immediate="true"
+                                      AdornmentIcon="@Icons.Material.Filled.LockReset"
+                                      AdornmentColor="Color.Error">
+                        </MudTextField>
+                        <MudTooltip Style="background-color:red" Text="@(_showRepeatPassword ? "Hide password" : "Show password")">
+                            <MudIconButton Icon="@(_showRepeatPassword ? @Icons.Material.Filled.VisibilityOff : @Icons.Material.Filled.Visibility)" Color="Color.Error" @onclick="() => showRepeatPasswordButton()"></MudIconButton>
+                        </MudTooltip>
+                        <MudText Typo="Typo.caption" Class="field-caption">Repeat the password</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <MudContainer Class="d-flex flex-column  align-items-center justify-content-center">
+                    <MudAlert Class="my-2" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.WarningAmber" Severity="Severity.Error">
+                        Please note: That in accordance with Gambler's Hell policy, account information provided during registration cannot be modified after the account is created, with the exception of password.
+                        This measure is in place to prevent the buying and selling of user accounts and to maintain the integrity of our platform.
+                    </MudAlert>
+                </MudContainer>
+
+                <MudDivider Class="my-4" />
+
+                <MudContainer Class="d-flex flex-column align-items-center justify-content-center">
+                    <MudAlert Class="my-2" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.WarningAmber" Severity="Severity.Error">
+                        Please note: After registration, you must <strong>verify your account within 10 minutes to prevent automatic deletion.</strong>
+                        You can complete the verification by clicking the <strong>"Verify"</strong> button that appears at the top of the page after logging in,
+                        or by visiting the verification page directly:
+                        <a style="text-decoration:underline; color:red" href="/accountverification">Verification Page</a>.
+                    </MudAlert>
+                </MudContainer>
+
+
+                <MudDivider Class="my-4" />
+
+                <MudContainer Class="d-flex flex-column gap-3">
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Size="Size.Large"
+                               Disabled="_processingRegister"
+                               Variant="Variant.Filled"
+                               Color="Color.Error"
+                               FullWidth="true"
+                               Style="border-radius: 8px; padding: 12px 0; font-weight: 500;">
+                        @if (_processingRegister)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Registering...</MudText>
+                        }
+                        else
+                        {
+                            <MudContainer Class="d-flex flex-row align-content-center align-items-center justify-content-center">
+                                <MudText>Accept the Deal</MudText>
+                                <MudIcon Class="mx-1" Icon="@Icons.Material.Filled.ReceiptLong"></MudIcon>
+                            </MudContainer>
+                        }
+                    </MudButton>
+
+                    <MudPaper Elevation="0" Class="d-flex flex-column align-content-center align-items-center justify-content-center mt-3" Style="background-color: transparent;">
+                        <MudText Typo="Typo.body2" Style="margin-bottom: 4px; color: #ff3333;">Already have an account?</MudText>
+                        <MudLink Underline="Underline.Always" Color="Color.Error" Href="/login">Sign in</MudLink>
+                    </MudPaper>
+                </MudContainer>
+            </EditForm>
+        </MudContainer>
+    </MudPaper>
+</MudContainer>
+
+
+@code {
+    bool _success;
+    public string _repeatPassword = "";
+    private bool _showPassword = false;
+    private bool _showRepeatPassword = false;
+    private bool _processingRegister = false;
+
+    public UserDTO UserModel = new();
+
+    MudTextField<string> _passwordField { get; set; } = new();
+
+    private async void OnValidSubmit(EditContext context)
+    {
+        if (UserModel.Password != _repeatPassword)
+        {
+            Snackbar.Add("Passwords do not match!", Severity.Error);
+            return;
+        }
+        _success = true;
+        _processingRegister = true;
+        StateHasChanged();
+        try
+        {
+            var success = await UserService.RegisterUserAsync(UserModel);
+
+            if (success)
+            {
+                Snackbar.Add("Successfully registered user " + UserModel.Username, Severity.Success);
+                Snackbar.Add("Welcome mail has been sent  to " + UserModel.Email, Severity.Success);
+                NavManager.NavigateTo("/login");
+            }
+            else
+            {
+                Snackbar.Add("Error upon registration", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error upon registration: " + ex.Message, Severity.Error);
+            return;
+        }
+        _processingRegister = false;
+        StateHasChanged();
+    }
+
+    //Password
+    private void showPasswordButton()
+    {
+        _showPassword = !_showPassword;
+    }
+
+    private InputType showPasswordAction()
+    {
+        if (!_showPassword)
+        {
+            return InputType.Password;
+        }
+        else
+        {
+            return InputType.Text;
+        }
+    }
+
+    //Repeat Password
+    private void showRepeatPasswordButton()
+    {
+        _showRepeatPassword = !_showRepeatPassword;
+    }
+
+    private InputType showRepeatPasswordAction()
+    {
+        if (!_showRepeatPassword)
+        {
+            return InputType.Password;
+        }
+        else
+        {
+            return InputType.Text;
+        }
+    }
+}

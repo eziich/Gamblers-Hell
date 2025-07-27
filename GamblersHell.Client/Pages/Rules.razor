@@ -1,0 +1,471 @@
+﻿@page "/rules"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserService UserService
+@attribute [AllowAnonymous]
+
+<PageTitle>Rules @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: radial-gradient(circle at center, #3d0000 0%, #2a0000 30%, #1a0000 60%, #000000 100%);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #ff9999 !important;
+    }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #000000, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+    }
+
+    .game-card-text {
+        font-family: 'Cinzel', serif;
+        color: #ff9999 !important;
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        background-color: #000000;
+        padding: 10px;
+    }
+
+    .game-text {
+        font-family: 'Cinzel', serif;
+        color: #ff9999 !important;
+        text-align: center;
+        line-height: 1.6;
+        height: 250px;
+        overflow-y: auto;
+        background-color: #000000;
+        padding: 15px;
+    }
+
+    .game-image-container {
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 250px;
+    }
+
+    .game-image {
+        max-width: 200px;
+        max-height: 200px;
+    }
+
+    .game-card {
+        display: flex;
+        flex-direction: column;
+        height: 600px;
+        background-color: #000000;
+    }
+
+    .gameCardGray, .gameCardRed, .gameCardPurple, .gameCardBlue, .gameCardBrown, .gameCardBlack {
+        transition: transform 0.3s ease-in-out;
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        border-radius: 8px;
+        margin-bottom: 30px;
+        height: 600px;
+        background-color: #000000;
+    }
+
+        .gameCardGray:hover, .gameCardRed:hover, .gameCardPurple:hover,
+        .gameCardBlue:hover, .gameCardBrown:hover, .gameCardBlack:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+
+    .list-item {
+        background-image: linear-gradient(90deg, #000000, #1a0000, #3d0000);
+        color: #ff9999;
+        border: 1px solid #5a0000;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 1rem;
+    }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+
+
+    .hell-radio-container {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .hell-radio {
+        display: none;
+    }
+
+    .hell-radio-label {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background-image: linear-gradient(90deg, #000000, #1a0000, #3d0000);
+        border: 1px solid #5a0000;
+        border-radius: 4px;
+        color: #ff9999;
+        font-family: 'Cinzel', serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hell-radio-label:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+</style>
+
+@if (_accountVerified == 0 && _id != 0 && UserModel != null)
+{
+    <VerificationNotificationComponent />
+}
+
+
+<MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+    <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-5 transparentPaper">
+        <MudText Class="title-text" Typo="Typo.h3">Game Rules</MudText>
+    </MudPaper>
+
+    <MudDivider Class="game-divider my-2" />
+
+    @* Safe Betting and anti-cheat *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Money" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Safe betting and anti-cheat system</MudText>
+                <MudText Style="color: #ff6666;">
+                    Whenever a player starts the game, the bet amount is deducted from their balance.
+                    Upon winning, the initial bet along with the winnings is credited back to their balance.
+                    This ensures that players cannot exit mid-game to avoid an unfavorable outcome.
+                </MudText>
+                <MudAlert Class="my-2" Severity="Severity.Error" Variant="Variant.Outlined">
+                    Refreshing the page on levels 7 and 8 does not impact the Flow value, preventing users from exploiting the system to manipulate outcomes.
+                </MudAlert>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    @* Level anti-cheat system *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Material.Filled.DataThresholding" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Anti-cheat leveling system</MudText>
+                <MudText Style="color: #ff6666;">
+                    Players cannot skip ahead by navigating to the URL of an unreached level.
+                </MudText>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    @* Punishments *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Gavel" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Punishments</MudText>
+                <MudText Style="color: #ff6666;">Beware of high-ranking demons on levels 7, 8, and 9. These formidable enemies possess special abilities that activate upon user's defeat.</MudText>
+                <MudAlert Class="my-2" Severity="Severity.Error" Variant="Variant.Outlined">
+                    Explanation for special abilites can be found on page <span><i>The Nine Rings</i></span> in the demon lore section.
+                </MudAlert>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    @* Hell pig *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Savings" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Hell Pig</MudText>
+                <MudText Style="color: #ff6666;">Try your luck with the Hell Pig Slot! Spin once per day for a chance to win rewards.</MudText>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    @* Gentlemen  *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Groups3" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Gentlemen</MudText>
+                <MudText Style="color: #ff6666;">Gentlemen represent players with the highest current balance that didn't win all nine games.</MudText>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    @* Become the next king  *@
+    <MudContainer Class="hell-radio-container">
+        <input class="hell-radio">
+        <label class="hell-radio-label">
+            <span class="hell-radio-icon">
+                <MudIcon Icon="@Icons.Custom.Uncategorized.ChessKing" Size="Size.Large" Color="Color.Error"></MudIcon>
+            </span>
+            <MudContainer Class="hell-radio-text">
+                <MudText Typo="Typo.h6" Style="text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);">Become the next king</MudText>
+                <MudText Style="color: #ff6666;">
+                    To earn a place on the Ruler's List and claim the title of the best, players must accumulate enough wealth to qualify (viewable in the Ruler's List tab).
+                    Players can re-play games in order to increase their balance.
+                    Once eligible, they must challenge and defeat King Satan in a final showdown.
+                    Upon victory, their balance is recorded as their final score.
+                    The player with the highest final result becomes the new King of Hell.
+                </MudText>
+                <MudAlert Class="my-2" Severity="Severity.Error" Variant="Variant.Outlined">
+                    After winning the ninth game, the user's balance will multiple by 3 and recorded as the final result.
+                    While games 1-8 may be re-played, the final game cannot be re-played, and the user's final result will remain unchanged.
+                    <span><b>Users should also keep in mind that once they start the game with King Satan, they won't be able to leave the site. Doing so, or losing to Satan, will result in their account being deleted.</b></span>
+                    <br />
+                    <span><i>"Remember you only get one chance to become the King of Hell...make it count"</i></span>
+                </MudAlert>
+            </MudContainer>
+        </label>
+    </MudContainer>
+
+    <MudDivider Class="game-divider my-2" />
+
+    @* Game Rules *@
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardGray mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/RiddleComponents/RiddleIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">The Riddle</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    The goal of the Riddle game is for the user to guess the correct combination provided by Raum.
+                    The combination consists of 5 symbols, and the user has 5 attempts to guess it correctly.
+                    After entering a guess, the user will click the "Compare" button to receive feedback on how many of the guesses are correct.
+                    If the user guesses the right combination within 5 attempts, they win the game.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/LadyComponents/LadyIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">The Lady</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    Lady is a game where both the user and Asmodeus draw cards one at a time. If a card drawn matches the number of a card already in the player's hand, both cards are discarded.
+                    Each card in the deck has a matching pair, except for the "Lilim" card.
+                    Once all cards have been drawn, both the user and Asmodeus will have identical sets of cards, with the exception that one player will have the "Lilim" card.
+                    In this phase, the player will choose one card from Asmodeus' hand to add to their own. This can either be the "Lilim" card or a card that matches a card already in the player's hand.
+                    Afterward, Asmodeus will select a card, and the cycle continues. The game ends when one player is left holding only the "Lilim" card. The player with the "Lilim" card loses the game.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/CardWarsComponents/CardWarsIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">CardWars</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    Card Wars is a game where both the player and Beelzebub start with 15 cards each. In each round, both players select one card to play.
+                    The player who plays the card with the higher value wins the round.
+                    The player who wins more rounds in a game earns one point. The first player to reach 5 points wins the game.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/SlotsComponents/SlotsIconChip.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Slots</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    The fourth game is a slot game, where the demon Mamoon will test the user's luck. The game is simple: the user places bets on landing a combination of matching symbols.
+                    Each combination of matching symbols offers a different payout, but to win the game, the user must land three "Golden Kraken Coins."
+                    These coins are highly sought after by the demon of greed, and only by achieving this combination will the user be able to pass through this ring of hell.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/BeastRaceComponents/BeastRaceIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Beastrace</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    The Fifth Circle of Hell is the Circle of the Beastmaster. In this circle, the user will place a bet and choose one of five beasts to compete in a race.
+                    After the selection, all the beasts will race against each other. To pass this circle, the chosen beast must win at least 3 out of 10 races.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/HereticsRouletteComponents/HereticsRouletteIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Heretic's Roulette</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    Heretic's Roulette is a game in which both the user and Belial begin with 6 rounds, each representing a spin of the roulette wheel.
+                    The objective of the game is for each player to choose a card, and the player whose card is closest to a third random card wins the round.
+                    Losing a round results in a 1/6 chance of dying for the player who lost.
+                    If the player survives the shot, their remaining rounds are reduced by 1, increasing their chance of death with each subsequent mistake.
+                    The user will progress to the next circle of hell by surviving Heretic's Roulette.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/PokerComponents/PokerIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Poker</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    In the Seventh Circle of Hell, the user will face off in a game of poker against Baal.
+                    The rules of poker are simple: in the first round, the player will bet minimun $50, and both players are dealt two cards each. Three additional community cards will be drawn face-up on the table.
+                    Based on the strength of their potential hand, the user will have three options: call, raise, or fold.
+                    If the user decides to continue to the final round, two more cards will be drawn. At the end of the final round, the player with the highest-ranking hand wins.
+                    The player starts with a Flow value of 5. Each time they win a round, the Flow value increases by 1, and each time they lose a round, it decreases by 1.
+                    If the Flow value reaches 10, the player wins the game, but if it drops to 0, the player loses and is expelled by the Expeller.
+                    Note that refreshing or reloading the page won't affect the Flow value.
+                    Users should also keep in mind that, in addition to the Flow value, their balance will increase or decrease based on the outcome of each round.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/PandoraComponents/PandoraIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Pandora's Box</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    Pandora's Box is a game where the user competes against Lilim, the daughter of King Satan. Both the user and Lilim choose one of the seven deadly sin cards.
+                    A random sin card is then selected. Whoever guesses the correct sin takes the sin card. If neither player guesses correctly, the round is reset.
+                    The objective of the game is to collect more sin cards than the opponent by the end of the game.
+                    However, players should be cautious, as Pandora's Box also contains the "Hope" card. Drawing the "Hope" card will destroy all collected sin cards and result in losing the round.
+                    The player starts with a Flow value of 3. Each time they win a round, the Flow value increases by 1, and each time they lose a round, it decreases by 1.
+                    If the Flow value reaches 6, the player wins the game, but if it drops to 0, the player loses and Liar's Kiss will be activated.
+                    Note that refreshing or reloading the page won't affect the Flow value.
+                    Users should also keep in mind that, in addition to the Flow value, their balance will increase or decrease based on the outcome of each round.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="25" Class="gameCardRed mx-2 mb-6 game-card">
+                <div class="game-image-container">
+                    <MudImage Class="game-image" ObjectFit="ObjectFit.Contain" Src="GamesComponents/BlackjackComponents/BlackjackIcon.png" />
+                </div>
+                <MudCardContent Class="game-card-text" Style="background-color:#000000">
+                    <MudText Class="d-flex justify-content-center align-content-center" Typo="Typo.h4">Blackjack</MudText>
+                </MudCardContent>
+                <MudCardContent Class="game-text">
+                    The Last Circle of Hell pits the user against King Satan himself.
+                    While all previous challenges can be replayed to earn rewards, this final test against Satan is the ultimate challenge.
+                    In the Ninth Circle, known as Treachery, the user will face the embodiment of evil in a game of blackjack.
+                    At the start of the game, the user is dealt a random card with its value. They can then choose to draw additional cards or hold their current score.
+                    The goal of blackjack is to achieve a score closer to 21 than Satan's without exceeding it. To win the round, the user must also have a higher score than Satan.
+                    However, if the user's score exceeds 21, they automatically lose the round.
+                    Get first to 15 wins and redeem your soul.
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+</MudContainer>
+
+<PageFooter />
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; } = 0;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        try
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID))?.Value);
+                _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+                try
+                {
+                    UserModel = await UserService.GetUserByID(_id);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                _id = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+}

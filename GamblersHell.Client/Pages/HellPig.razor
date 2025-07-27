@@ -1,0 +1,279 @@
+﻿@page "/hellpig"
+@using GamblersHell.Client.StateProviders
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject UserService UserService
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthStateProvider
+@inject HellPigService HellPigService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject CookieAuthenticationStateProvider authenticationStateProvider
+@inject NavMenuState NavMenuState
+@attribute [Authorize]
+
+<PageTitle>Hell Pig @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .hell-pig-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .sign-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .inner-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+    }
+
+    .reveal-btn {
+        background-color: #3d0000;
+        color: #ff9999;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #ff9999;
+        border-radius: 4px;
+        margin-top: 1rem;
+        padding: 8px 20px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+        .reveal-btn:hover {
+            background-color: #5d0000;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+    }
+
+    .sign-image {
+        transition: all 0.3s ease;
+        border-radius: 4px;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    .spin-animation {
+        animation: spin 0.2s linear;
+    }
+
+    @@keyframes spin {
+        from {
+            transform: rotateY(0deg);
+        }
+
+        to {
+            transform: rotateY(180deg);
+        }
+    }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0)
+    {
+        <VerificationNotificationComponent />
+        <UserNotVerifiedHellInteraction />
+    }
+    else
+    {
+
+        <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-2">
+            <MudContainer Class="hell-pig-container mb-4">
+                <MudText Typo="Typo.h2" Style="color:#ff9999" Class="mb-3 d-flex justify-content-center align-content-center title-text">HELL PIG</MudText>
+                <MudContainer Class="d-flex align-items-center align-content-center justify-content-center">
+                    <MudTooltip Text="@(_hellPigSlotCanBePlayed ? "Good luck mortal" : "You clamied your prize for today, mortal")" Arrow="true" Placement="Placement.Right" Style="background-color:rgba(255, 0, 0, 0.7)">
+                        <MudImage Class="demon" Width="220" Height="300" Src="HellPigComponents/HellPig.jpg" Style="filter: contrast(1.2) saturate(1.2);"></MudImage>
+                    </MudTooltip>
+                </MudContainer>
+            </MudContainer>
+
+            <MudContainer Class="d-flex flex-column align-items-center align-content-center justify-content-center my-4">
+                @if (Sign.ID != 0)
+                {
+                    <MudCard Class="sign-card d-flex flex-column align-items-center align-content-center justify-content-center my-4 pa-2" Style="background-color:#ff9999">
+                        <MudCard Class="inner-card pa-4">
+                            <MudImage Width="220" Height="220" Src="@Sign.picture"></MudImage>
+                        </MudCard>
+                    </MudCard>
+                }
+                else
+                {
+                    <MudCard Class="sign-card d-flex flex-column align-items-center align-content-center justify-content-center my-4 pa-2" Style="background-color:#ff9999">
+                        <MudCard Class="inner-card pa-4">
+                            <MudImage Class="sign-image" Width="220" Height="220" Src="HellPigComponents/1000.png"></MudImage>
+                        </MudCard>
+                    </MudCard>
+                }
+            </MudContainer>
+
+            <MudButton Class="reveal-btn" Disabled="@(!_hellPigSlotCanBePlayed)" @onclick="GetSign">REVEAL YOUR FATE</MudButton>
+
+            <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+                <PageFooter />
+            </MudItem>
+        </MudItem>
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private bool _isSpinning = false;
+    private bool _pageLoading = true;
+    private bool _hellPigSlotCanBePlayed = false;
+    private bool _playDailyReward = false;
+
+    public NavMenu _navmenu { get; set; } = new();
+
+    public HellPigDTO Sign = new();
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        try
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                _id = Convert.ToInt32(user.FindFirst(u => u.Type == "ID")?.Value ?? "0");
+                _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+
+                if (_accountVerified == 1)
+                {
+                    try
+                    {
+                        UserModel = await UserService.GetUserByID(_id);
+                        if (_id != 0)
+                        {
+                            _hellPigSlotCanBePlayed = await HellPigService.DailyRewards(_id);
+                        }
+                        else
+                        {
+                            Snackbar.Add("Error!", Severity.Error);
+                            NavigationManager.NavigateTo("/");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                _id = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        _pageLoading = false;
+    }
+
+    public async Task GetSign()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            _isSpinning = true;
+            Sign = await HellPigService.GetPigSignAsync();
+            StateHasChanged();
+            await Task.Delay(200);
+        }
+        _isSpinning = false;
+
+        try
+        {
+            var prizePayment = await HellPigService.DailyRewardsPrice(id: _id, priceValue: Sign.reward);
+
+            if (prizePayment)
+            {
+                if (Sign.ID == 1)
+                {
+                    Snackbar.Add("Big-Pig Win!", Severity.Error, config =>
+                    {
+                        config.Icon = @Icons.Material.Filled.Savings;
+                        config.IconColor = Color.Inherit;
+                        config.IconSize = Size.Large;
+                    });
+                }
+                else if (Sign.ID > 1 && Sign.ID < 6)
+                {
+                    Snackbar.Add("Medium Win!", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Better luck next time!", Severity.Warning);
+                }
+            }
+            else
+            {
+                Snackbar.Add("Error!", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+        StateHasChanged();
+        NavMenuState.RefreshNavMenu();
+        await OnInitializedAsync();
+    }
+}

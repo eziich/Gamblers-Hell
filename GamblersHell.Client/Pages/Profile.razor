@@ -1,0 +1,190 @@
+﻿@page "/profile"
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Models
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Profile @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000 0%, #1a0000 50%, #3d0000 75%, #1a0000 90%, #000000 100%);
+        background-attachment: fixed;
+    }
+
+    .profile-container {
+        animation: glow 3s infinite alternate;
+    }
+
+
+    .inner-card {
+        background-image: radial-gradient(circle, #3d0000, #2a0000, #1a0000, #000000);
+        border-radius: 6px;
+        padding: 1rem;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        letter-spacing: 2px;
+    }
+
+
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .profile-text-field {
+        color: white !important;
+        border-bottom: 1px solid #ff9999 !important;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 300px;
+    }
+
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (_accountVerified == 0)
+    {
+        <VerificationNotificationComponent />
+    }
+
+    <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-2">
+        <MudContainer Class="profile-container mb-4">
+            <MudText Typo="Typo.h2" Style="color:#ff9999" Class="mb-3 d-flex justify-content-center align-content-center title-text">@UserModel.Username</MudText>
+        </MudContainer>
+        <MudCard Class="profile-card d-flex flex-column align-items-center align-content-center justify-content-center my-4 pa-2" Style="background-color:#ff9999; max-width: 400px; width: 100%;">
+            <MudCard Class="inner-card pa-4 w-100">
+                <MudContainer Class="d-flex flex-column justify-content-center align-content-center align-items-center">
+                    <MudField Class="profile-text-field" Label="First Name" Variant="Variant.Text">
+                        <MudText Style="color:white">@UserModel.FirstName</MudText>
+                    </MudField>
+
+                    <MudField Class="profile-text-field" Label="Last Name" Variant="Variant.Text">
+                        <MudText Style="color:white">@UserModel.LastName</MudText>
+                    </MudField>
+
+                    <MudField Class="profile-text-field" Label="Email" Variant="Variant.Text">
+                        <MudText Style="color:white">@UserModel.Email</MudText>
+                    </MudField>
+
+                    <MudField Class="profile-text-field" Style="color:white" Label="Current Balance" Variant="Variant.Text">
+                        <MudText Style="color:white">@UserModel.Balance $</MudText>
+                    </MudField>
+
+                    <MudField Class="profile-text-field" Label="Current Level" Variant="Variant.Text">
+                        <MudText Style="color:white">@UserModel.Level</MudText>
+                    </MudField>
+
+                    <MudField Class="profile-text-field" Label="All-game winning balance" Variant="Variant.Text">
+                        <MudText Style="color:white">@(_userWonFinalgame ? UserModel.BalanceAfterWin : "User didn't win all games")</MudText>
+                    </MudField>
+
+                    @if (!_userWonFinalgame)
+                    {
+                        <MudField Class="profile-text-field" Label="Flow Value - Level 7 - Vioelence (Poker)" Variant="Variant.Text">
+                            <MudText Style="color:white">@UserModel.PokerGameControl</MudText>
+                        </MudField>
+
+                        <MudField Class="profile-text-field" Label="Flow Value - Level 8 - Fraud (Pandora's Box)" Variant="Variant.Text">
+                            <MudText Style="color:white">@UserModel.PandoraGameControl</MudText>
+                        </MudField>
+                    }
+
+                </MudContainer>
+                <MudContainer Class="d-flex flex-column  align-items-center justify-content-center">
+                    <MudAlert Class="my-2" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.WarningAmber" Severity="Severity.Error">
+                        To maintain the integrity of user accounts and prevent buying and selling of accounts, Gamblers' Hell restricts changes to user account information.
+                        This policy ensures that user data remains secure and is not subject to unauthorized transfer or alteration.
+                    </MudAlert>
+                    <MudButton Class="my-2" Size="Size.Medium" Style="background-color:darkred;color:white" @onclick="ChangePassword" EndIcon="@Icons.Material.Filled.Password">Change password</MudButton>
+                </MudContainer>
+            </MudCard>
+
+        </MudCard>
+
+        <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+            <PageFooter />
+        </MudItem>
+    </MudItem>
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0 || UserModel.Level == 10;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+        _pageLoading = false;
+    }
+
+    private Task ChangePassword()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, BackdropClick = false, MaxWidth = MaxWidth.Large };
+        return DialogService.ShowAsync<ChangePasswordDialog>("Change Password", options);
+    }
+}

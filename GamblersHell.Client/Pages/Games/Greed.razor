@@ -1,0 +1,466 @@
+﻿@page "/greed"
+@using GamblersHell.Shared
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.Services
+@inject ISnackbar Snackbar
+@inject SlotsService SlotsService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject NavMenuState NavMenuState
+@inject TransactionService TransactionService
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Greed @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: linear-gradient(180deg, #000000, #00121a, #00293d, #003b58, #004a73, #005b89);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(0, 132, 255, 0.8);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #99c4ff !important;
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .game-card {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(0, 132, 255, 0.5));
+        border-radius: 8px;
+    }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.8));
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 15px rgba(0, 132, 255, 0.6));
+    }
+
+
+
+    .game-button {
+        background-color: #00293d !important;
+        color: #99c4ff !important;
+        font-weight: bold;
+        transition: transform 0.2s, background-color 0.2s;
+        border: 2px solid #0084ff !important;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-family: 'Cinzel', serif;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background-color: #003b58 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 132, 255, 0.8);
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #0084ff, transparent) !important;
+        height: 3px !important;
+        margin: 10px 0;
+        box-shadow: 0 0 10px rgba(0, 132, 255, 0.8);
+    }
+
+    .score-chip {
+        background-color: #00293d !important;
+        border: 1px solid #0084ff !important;
+        color: #99c4ff !important;
+        box-shadow: 0 0 8px rgba(0, 132, 255, 0.6);
+        font-family: 'Cinzel', serif;
+    }
+
+    .score-avatar {
+        background-color: #00293d !important;
+        border: 1px solid #0084ff !important;
+        color: #99c4ff !important;
+        box-shadow: 0 0 8px rgba(0, 132, 255, 0.6);
+        font-weight: bold;
+    }
+
+    .cards-container {
+        background: rgba(0, 20, 40, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 15px rgba(0, 132, 255, 0.3);
+    }
+
+    .pulse-glow {
+        animation: pulseglow 2s infinite alternate;
+    }
+
+    .playerCards {
+        transition: transform 0.3s;
+        filter: drop-shadow(0 0 5px rgba(0, 132, 255, 0.5));
+        border-radius: 8px;
+    }
+
+        .playerCards:hover {
+            transform: translateY(-5px) scale(1.06);
+            filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.8));
+        }
+
+    .card-text {
+        font-family: 'Cinzel', serif;
+        color: #99c4ff !important;
+        text-shadow: 0 0 5px rgba(0, 132, 255, 0.5);
+    }
+
+    /* Override MudChip styles */
+    .mud-chip {
+        background-color: #00293d !important;
+        border: 1px solid #0084ff !important;
+        color: #99c4ff !important;
+        font-family: 'Cinzel', serif;
+    }
+
+        .mud-chip .mud-chip-content {
+            color: #99c4ff !important;
+        }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 4)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+        @* Mobile Verison *@
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudContainer Class="d-flex  flex-column justify-content-center align-items-center">
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                    <MudText Class="title-text pulse-glow" Typo="Typo.h4">Slots</MudText>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                    <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#00293d !important" Arrow="true">
+                        <MudImage Class="demon" Src="Demons/Greed.png" Width="200" Height="200"></MudImage>
+                    </MudTooltip>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-content-center">
+                    @if (ListSlotScore?.Count == 3)
+                    {
+                        @foreach (var slot in ListSlotScore)
+                        {
+                            <MudPaper Style="background-color:black">
+                                <MudPaper Style="background-color:white" Class="pa-1 ma-1">
+                                    <MudImage Src="@slot.Picture" Style="width:auto; height:90px" />
+                                </MudPaper>
+                            </MudPaper>
+                        }
+                    }
+                    else
+                    {
+                        <MudPaper Style="background-color:black" Class="d-flex flex-row">
+                            <MudPaper Style="background-color:white" Class="pa-1 ma-1">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsDeath.png" Style="width:auto; height:90px" />
+                            </MudPaper>
+
+                            <MudPaper Style="background-color:white" Class="pa-1 ma-1">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsWin.png" Style="width:auto; height:90px" />
+                            </MudPaper>
+
+                            <MudPaper Style="background-color:white" Class="pa-1 ma-1">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsDeath.png" Style="width:auto; height:90px" />
+                            </MudPaper>
+                        </MudPaper>
+                    }
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column flex-md-row justify-content-center align-content-center mt-2 transparentPaper">
+
+                    <MudChip T="int" Size="Size.Medium" Color="Color.Primary">
+                        <MudIconButton Class="mr-4" Disabled="@(_gameBet <= 50 || UserModel.Balance == 0)" @onclick="DecreaseBet" Variant="Variant.Filled" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small"></MudIconButton>
+                        <MudText>@_gameBet</MudText>
+                        <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.AttachMoney"></MudIcon>
+                        <MudIconButton Class="ml-4" Disabled="@((_gameBet >= (UserModel.Balance)) || UserModel.Balance == 0)" Variant="Variant.Filled" @onclick="IncreaseBet" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small"></MudIconButton>
+                    </MudChip>
+
+                    <MudButton Color="Color.Inherit" Class="game-button my-2" Disabled="@(_stopSpin || UserModel.Balance < _gameBet)" OnClick="SlotSpin">Spin the wheel</MudButton>
+                    <MudButton Color="Color.Inherit" Class="game-button my-2" Disabled="@(_stopSpin || UserModel.Balance < _gameBet)" @onclick="AutomaticSpin">Automatic spin</MudButton>
+                    <MudButton Color="Color.Inherit" Class="game-button my-2" @onclick="StopAutomaticSpin" Disabled="!_stopSpin">Stop automatic spin</MudButton>
+
+                </MudPaper>
+
+            </MudContainer>
+        </MudHidden>
+
+
+        @* PC Verison *@
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudContainer Class="d-flex flex-column justify-content-center align-items-center">
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                    <MudText Class="title-text pulse-glow" Typo="Typo.h3">Slots</MudText>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                    <MudTooltip Text="@_demonMessage" Placement="Placement.Right" Style="background-color:#00293d !important" Arrow="true">
+                        <MudImage Class="demon" Src="Demons/Greed.png" Width="250" Height="250"></MudImage>
+                    </MudTooltip>
+                </MudPaper>
+
+                <MudPaper Elevation="0" Style="height:300px" Class="d-flex flex-row justify-content-center align-content-center">
+                    @if (ListSlotScore?.Count == 3)
+                    {
+                        @foreach (var slot in ListSlotScore)
+                        {
+                            <MudPaper Style="background-color:black">
+                                <MudPaper Style="background-color:white" Class="pa-4 ma-2">
+                                    <MudImage Src="@slot.Picture" Width="250" Height="250" />
+                                </MudPaper>
+                            </MudPaper>
+                        }
+                    }
+                    else
+                    {
+                        <MudPaper Style="background-color:black" Class="d-flex flex-row">
+                            <MudPaper Style="background-color:white" Class="pa-4 ma-2">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsDeath.png" Class="mx-2" Width="250" Height="250" />
+                            </MudPaper>
+
+                            <MudPaper Style="background-color:white" Class="pa-4 ma-2">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsWin.png" Class="mx-2" Width="250" Height="250" />
+                            </MudPaper>
+
+                            <MudPaper Style="background-color:white" Class="pa-4 ma-2">
+                                <MudImage Src="/GamesComponents/SlotsComponents/SlotsDeath.png" Class="mx-2" Width="250" Height="250" />
+                            </MudPaper>
+                        </MudPaper>
+                    }
+                </MudPaper>
+
+                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-content-center mt-2 transparentPaper">
+                    <MudChip T="int" Size="Size.Large" Color="Color.Primary">
+                        <MudIconButton Class="mr-4" Disabled="@(_gameBet <= 50 || UserModel.Balance == 0)" @onclick="DecreaseBet" Variant="Variant.Filled" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small"></MudIconButton>
+                        <MudText>@_gameBet</MudText>
+                        <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.AttachMoney"></MudIcon>
+                        <MudIconButton Class="ml-4" Disabled="@((_gameBet >= (UserModel.Balance)) || UserModel.Balance == 0)" Variant="Variant.Filled" @onclick="IncreaseBet" Color="Color.Tertiary" Style="color:black" Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small"></MudIconButton>
+                    </MudChip>
+
+                    <MudButton Color="Color.Inherit" Class="game-button mx-2" Disabled="@(_stopSpin || UserModel.Balance < _gameBet)" OnClick="SlotSpin">Spin the wheel</MudButton>
+                    <MudButton Color="Color.Inherit" Class="game-button mx-2" Disabled="@(_stopSpin || UserModel.Balance < _gameBet)" @onclick="AutomaticSpin">Automatic spin</MudButton>
+                    <MudButton Color="Color.Inherit" Class="game-button mx-2" @onclick="StopAutomaticSpin" Disabled="!_stopSpin">Stop automatic spin</MudButton>
+
+                </MudPaper>
+            </MudContainer>
+        </MudHidden>
+        }
+    }
+}
+
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _gameBet = 50;
+    private int _gameWinValue = 0;
+    private int gameProgressionLevel = 5;
+    //When user wins slot but doens't get the coin, user does not pass the level but gets rewards
+    private int _currentGameLevel = 4;
+    private bool _pageLoading = true;
+    private bool _stopSpin = false;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "Keep spinning. You will never get all three Kraken coins!";
+    private string _gameSessionToken;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private List<SlotsSymbolsDTO> ListSlotScore = new List<SlotsSymbolsDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Greed");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "Keep spinning. You will never get all three Kraken coins!";
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+    }
+
+    public async Task RandomSlot()
+    {
+        try
+        {
+            var slots = await SlotsService.GetSlotsSignsAsync();
+            var random = new Random();
+
+            if (ListSlotScore.Count < 3)
+            {
+                ListSlotScore = new List<SlotsSymbolsDTO>(3);
+            }
+
+            while (ListSlotScore.Count < 3)
+            {
+                ListSlotScore.Add(new SlotsSymbolsDTO());
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                var randomSlot = slots[random.Next(0, slots.Count)];
+                ListSlotScore[i] = randomSlot;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching slots: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task SlotSpin()
+    {
+        await TransactionService.GameLostBetTransaction(_id, _gameBet);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+
+        for (int i = 0; i < 10; i++)
+        {
+            await RandomSlot();
+            StateHasChanged();
+            await Task.Delay(200);
+        }
+
+        if (ListSlotScore.Count >= 3)
+        {
+            var firstId = ListSlotScore[0].ID;
+            if (ListSlotScore.All(slot => slot.ID == firstId))
+            {
+                if (firstId == 1)
+                {
+                    Snackbar.Add("You got three kraken coins!", Severity.Success);
+                    _demonMessage = "All three? Impossible... Greed, like me, is never satisfied.";
+
+                    //User won the game for the first time, achivement
+                    if (UserModel.Level == 4)
+                    {
+                        Snackbar.Add("Three of a kind, but will you stop here, or will greed drive you further?", Severity.Error, config =>
+                        {
+                            config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                            config.IconColor = Color.Inherit;
+                            config.IconSize = Size.Large;
+                        });
+                        await TransactionService.GameWonTransaction(_id, _gameBet, gameProgressionLevel, "Greed", _gameSessionToken);
+                        NavMenuState.RefreshNavMenu();
+                        StateHasChanged();
+                        await Task.Delay(1000);
+                        NavigationManager.NavigateTo("/belial");
+                        return;
+                    }
+                    _gameWinValue = _gameBet * ListSlotScore[0].Reward;
+                    await TransactionService.GameWonTransaction(_id, _gameWinValue, gameProgressionLevel, "Greed", _gameSessionToken);
+                }
+                else
+                {
+                    Snackbar.Add("You won!", Severity.Success);
+                    _demonMessage = "Yes, you won. But it's not enough, is it?";
+                    _gameWinValue += _gameBet * ListSlotScore[0].Reward;
+                    await TransactionService.GameWonTransaction(_id, _gameWinValue, _currentGameLevel, "Greed", _gameSessionToken);
+                }
+            }
+            else
+            {
+                Snackbar.Add("You lost!", Severity.Error);
+                _demonMessage = "So close... but greed always takes more than you have to give.";
+            }
+        }
+        else
+        {
+            Snackbar.Add("Not enough slots!", Severity.Error);
+        }
+        _demonMessage = "Keep spinning. You will never get all three Kraken coins!";
+    }
+
+    public void IncreaseBet()
+    {
+        _gameBet = _gameBet + 50;
+    }
+
+    public void DecreaseBet()
+    {
+        _gameBet = _gameBet - 50;
+    }
+
+    public async Task AutomaticSpin()
+    {
+        _stopSpin = true;
+        while (_stopSpin)
+        {
+            await SlotSpin();
+            await Task.Delay(1000);
+        }
+    }
+
+    public void StopAutomaticSpin()
+    {
+        _stopSpin = false;
+        _demonMessage = "Keep spinning. You will never get all three Kraken coins!";
+    }
+}

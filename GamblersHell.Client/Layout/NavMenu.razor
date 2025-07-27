@@ -1,0 +1,230 @@
+﻿@using GamblersHell.Shared.Interface
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using GamblersHell.Client.StateProviders
+@using Microsoft.AspNetCore.Authorization
+@inject IDialogService DialogService
+@inject CookieAuthenticationStateProvider AuthManager
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserService UserService
+@inject NavMenuState NavMenuState
+@attribute [Authorize]
+
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <MudButton Size="Size.Large" Color="Color.Error" EndIcon="@Icons.Material.Filled.Whatshot" class="navbar-brand" href="/">Gambler's Hell</MudButton>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+
+        <MudDivider />
+
+        @if (_userModel.ID != 0)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/profile">
+                    <MudIcon Icon="@Icons.Material.Filled.PersonPin" Title="Profile" />
+                    <MudButton Color="Color.Inherit" Variant="Variant.Text">@_userModel.Username</MudButton>
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" style="pointer-events: none">
+                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Title="Placeholder" />
+                    <MudButton Color="Color.Inherit" Variant="Variant.Text">Balance: @_userModel.Balance $</MudButton>
+                </NavLink>
+                <NavLink class="nav-link" style="pointer-events: none">
+                    <MudIcon Icon="@Icons.Material.Filled.ViewTimeline" Title="Placeholder" />
+                    <MudButton Color="Color.Inherit" Variant="Variant.Text">Level: @_userModel.Level</MudButton>
+                </NavLink>
+
+                <MudTooltip Text="Balance after completing Gambler’s Hell" Arrow="true" Placement="Placement.Left" Color="Color.Error">
+                    <NavLink class="nav-link" style="pointer-events: none">
+                        <MudIcon Icon="@Icons.Custom.Uncategorized.ChessKing" Color="Color.Error" Title="Placeholder" />
+                        <MudButton Color="Color.Error" Variant="Variant.Text">@_userModel.BalanceAfterWin</MudButton>
+                    </NavLink>
+                </MudTooltip>
+            </div>
+            <MudDivider Class="mb-2" />
+        }
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/rings">
+                <MudIcon Icon="@Icons.Material.Filled.Cyclone" Title="The Nine Rings" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">The Nine Rings</MudButton>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/games">
+                <MudIcon Icon="@Icons.Material.Filled.Casino" Title="Games" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">Games</MudButton>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/rulers">
+                <MudIcon Icon="@Icons.Custom.Uncategorized.ChessKing" Title="Rulers of Hell" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">Rulers of Hell</MudButton>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/hellpig">
+                <MudIcon Icon="@Icons.Material.Filled.Savings" Title="Hell Pig" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">Hell Pig</MudButton>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/rules">
+                <MudIcon Icon="@Icons.Material.Filled.Flaky" Title="Rules" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">Rules</MudButton>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/about">
+                <MudIcon Icon="@Icons.Material.Filled.Info" Title="About" />
+                <MudButton Color="Color.Inherit" Variant="Variant.Text">About</MudButton>
+            </NavLink>
+        </div>
+
+        @if (_userModel.ID != 0)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link">
+                    <MudIcon Icon="@Icons.Material.Filled.Logout" Color="Color.Error" @onclick="OpenLogoutDialog" Title="Logout" />
+                    <MudButton Color="Color.Error" Variant="Variant.Text" @onclick="OpenLogoutDialog">Logout</MudButton>
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/login">
+                    <MudIcon Icon="@Icons.Material.Filled.Login" Color="Color.Inherit" Title="Login" />
+                    <MudButton Color="Color.Inherit" Variant="Variant.Text">Login</MudButton>
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/register">
+                    <MudIcon Icon="@Icons.Material.Filled.Handshake" Color="Color.Error" Title="Accept the Deal" />
+                    <MudButton Color="Color.Inherit" Variant="Variant.Text">Accept the Deal</MudButton>
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+<MudMessageBox @ref="_logoutMessageBox" Title="Are you sure you want to logout?">
+    <MessageContent>
+        <MudText Class="mb-2"><span><i>"Escaping like this isn't a option..."</i></span></MudText>
+    </MessageContent>
+    <YesButton>
+        <MudButton Class="mx-1" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Logout">Logout!</MudButton>
+    </YesButton>
+    <CancelButton>
+        <MudButton Class="mx-1" Variant="Variant.Outlined" Color="Color.Error">Cancel</MudButton>
+    </CancelButton>
+</MudMessageBox>
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private int _id { get; set; }
+    private MudMessageBox _logoutMessageBox;
+    private UserDTO _userModel { get; set; } = new();
+
+    [CascadingParameter] public Task<AuthenticationState>? _AuthStateTask { get; set; }
+    public LoginDTO _model { get; set; } = new LoginDTO();
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override void OnInitialized()
+    {
+        // Existing code...
+        NavMenuState.OnNavMenuRefresh += async () =>
+        {
+            await OnInitializedAsync();
+            StateHasChanged();
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID))?.Value);
+            try
+            {
+                _userModel = await UserService.GetUserByID(_id);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+    }
+
+    public async Task Logout()
+    {
+        try
+        {
+            // Get the current authentication state
+            var authState = await _AuthStateTask;
+
+            // Pass the current user's
+            // sPrincipal to the LogOut method
+            var result = await AuthManager.LogOut(authState.User);
+
+            // Navigate to login page after successful logout
+            NavManager.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logout error: {ex.Message}");
+            // You might want to display an error message to the user
+        }
+    }
+
+    private async Task OpenLogoutDialog()
+    {
+        bool? result = await _logoutMessageBox.ShowAsync();
+        if (result == true)
+        {
+            await Logout();
+        }
+    }
+
+    public void Dispose()
+    {
+        // Existing disposal code...
+        NavMenuState.OnNavMenuRefresh -= async () =>
+        {
+            await OnInitializedAsync();
+            StateHasChanged();
+        };
+    }
+}

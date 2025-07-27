@@ -1,0 +1,187 @@
+﻿@page "/belial"
+@using GamblersHell.Client.StateProviders
+@using GamblersHell.Shared
+@using GamblersHell.Client.Services
+@using GamblersHell.Client.Pages.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Belial @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/ScrollsHighRank.css">
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(180deg, #000000, #000000, #000000, #0a0a0a, #1e0f0a, #2a1c12);
+        background-attachment: fixed;
+    }
+
+    .satan-container {
+        animation: glow 3s infinite alternate;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 10px rgba(222, 184, 135, 0.8);
+        letter-spacing: 2px;
+    }
+
+    .scroll {
+        background-image: radial-gradient(circle, #2a1c12, #1e0f0a, #0a0a0a, #000000);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(222, 184, 135, 0.5);
+        padding: 2rem;
+        border: 2px solid #cd9b4a;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .scroll:hover {
+            box-shadow: 0 0 20px rgba(222, 184, 135, 0.8);
+        }
+
+    .scroll-text {
+        color: #cd9b4a;
+    }
+
+    .satan-image {
+        filter: contrast(1.2) saturate(1.2);
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes glow {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(222, 184, 135, 0.7));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 15px rgba(222, 184, 135, 0.9));
+        }
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .warning-text {
+        background-color: rgba(42, 28, 18, 0.6);
+        border-radius: 4px;
+        padding: 1rem;
+        border: 1px solid #cd9b4a;
+        box-shadow: 0 0 10px rgba(222, 184, 135, 0.5);
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 5)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+        <MudItem Class="d-flex flex-column min-vh-100 align-items-center align-content-center justify-content-center my-1">
+            <MudContainer Class="scroll-container">
+                <MudContainer Class="scroll">
+                    <MudContainer Class="scroll-text d-flex flex-column justify-content-center align-items-center">
+                        <MudImage Src="Demons/Wrath.png" Width="300" Height="300"></MudImage>
+                        <MudText Typo="Typo.h3">BELIAL</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.h5" Class="my-4">
+                            <i>
+                                <span>
+                                    "The Beastmaster"
+                                </span>
+                            </i>
+                        </MudText>
+                        <MudText Class="mt-2 mb-5" Typo="Typo.body1" Align="Align.Center">
+                            <i>
+                                <span>
+                                    Belial, the ruler of Sixth Circle, is a brutal and merciless demon, known as the Beastmaster.
+                                    He commands a menagerie of terrifying beasts—creatures of ferocious strength and speed, bred for one purpose: combat.
+                                    These creatures, vicious and untamable, represent the raw, unbridled energy of wrath itself.
+                                    Belial delights in watching his beasts fight, train, and race, channeling the fury of his domain into the very creatures he controls.
+                                    Belial is the embodiment of rage, with a terrifying presence that commands respect and fear.
+                                    His eyes burn with the fire of wrath, and his voice echoes like a roar of thunder. He is the ultimate manifestation of anger, and his beasts serve as his instruments of destruction and competition.
+                                    As the Beastmaster, Belial has created an arena for his beasts to fight and race.
+                                    To him, there is no distinction between animal and man; both are driven by the same primal impulses, the same ferocity.
+                                    The Beast Races are an extension of this philosophy—players must wager on which beast will win, understanding that wrath can be a powerful motivator for both beast and man alike.
+                                </span>
+                            </i>
+                        </MudText>
+                    </MudContainer>
+                </MudContainer>
+            </MudContainer>
+
+            <MudItem Class="d-flex justify-content-center align-items-center mt-auto w-100">
+                <PageFooter />
+            </MudItem>
+        </MudItem>
+        }
+    }
+}
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    public bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == nameof(UserDTO.ID)).Value);
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+        _pageLoading = false;
+        StateHasChanged();
+    }
+}

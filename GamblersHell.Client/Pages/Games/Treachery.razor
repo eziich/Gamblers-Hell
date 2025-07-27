@@ -1,0 +1,1134 @@
+﻿@page "/treachery"
+@using GamblersHell.Models
+@using GamblersHell.Client.Pages.Components
+@using GamblersHell.Shared
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using GamblersHell.Client.StateProviders
+@using GamblersHell.Client.Services
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject UserService UserService
+@inject BlackjackService BlackjackService
+@inject TransactionService TransactionService
+@inject NavMenuState NavMenuState
+@inject NavigationManager NavigationManager
+@inject CookieAuthenticationStateProvider AuthManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IDisposable
+@attribute [Authorize]
+
+<PageTitle>Treachery @GamblersHellConstants.DeafultPageName</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="css/DemonFloat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Nosifer&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background: radial-gradient(circle at center, #500000 0%, #300000 30%, #200000 60%, #000000 100%);
+        background-attachment: fixed;
+        background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='skulls' patternUnits='userSpaceOnUse' width='80' height='80' patternTransform='scale(2) rotate(0)'%3E%3Cpath d='M40,20 A15,15 0 1 1 40,50 A15,15 0 1 1 40,20 Z M32,35 A3,4 0 1 0 32,43 A3,4 0 1 0 32,35 Z M48,35 A3,4 0 1 0 48,43 A3,4 0 1 0 48,35 Z M30,55 Q40,65 50,55 L40,60 Z' fill='none' stroke='%23600' stroke-width='0.8' stroke-opacity='0.3'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23skulls)'/%3E%3C/svg%3E"), radial-gradient(circle at center, #500000 0%, #300000 30%, #200000 60%, #000000 100%);
+        background-size: auto, 300px 300px, cover;
+    }
+
+    .transparentPaper {
+        background-color: transparent !important;
+    }
+
+    .demon-float {
+        animation: float 2s ease-in-out infinite;
+    }
+
+    .title-text {
+        font-family: 'Cinzel', cursive;
+        text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #ff3333 !important;
+        transform: perspective(500px) rotateX(5deg);
+    }
+
+    .game-card {
+        transition: transform 0.3s, filter 0.3s;
+        filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.7));
+        border-radius: 8px;
+        border: 1px solid #800000;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 1)) brightness(1.2);
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+    .demon {
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) contrast(1.2) brightness(1.1);
+        transform-style: preserve-3d;
+    }
+
+        .demon:hover {
+            animation-play-state: paused;
+            filter: drop-shadow(0 0 30px #ff0000) contrast(1.4) brightness(1.3);
+        }
+
+    @@keyframes float {
+        0% {
+            transform: translatey(0px) rotate(0deg);
+        }
+
+        25% {
+            transform: translatey(-15px) rotate(2deg);
+        }
+
+        50% {
+            transform: translatey(0px) rotate(0deg);
+        }
+
+        75% {
+            transform: translatey(15px) rotate(-2deg);
+        }
+
+        100% {
+            transform: translatey(0px) rotate(0deg);
+        }
+    }
+
+
+    .game-button {
+        background: linear-gradient(to bottom, #700000, #400000) !important;
+        color: #ffaaaa !important;
+        font-weight: bold;
+        transition: all 0.3s;
+        border: 2px solid #ff3333 !important;
+        border-radius: 2px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: 'Cinzel', serif;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), inset 0 0 5px rgba(255, 0, 0, 0.6);
+        text-shadow: 0 0 5px #ff0000;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .game-button:hover:not(.mud-disabled-text) {
+            background: linear-gradient(to bottom, #900000, #600000) !important;
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 1), inset 0 0 10px rgba(255, 0, 0, 1);
+            text-shadow: 0 0 8px #ff0000;
+        }
+
+        .game-button:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -100%;
+            width: 40px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+        }
+
+        .game-button:hover:after:not(.mud-disabled-text) {
+            left: 200%;
+        }
+
+    .game-divider {
+        background: linear-gradient(90deg, transparent, #ff0000, #ff3333, #ff0000, transparent) !important;
+        height: 3px !important;
+        margin: 15px 0;
+        box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
+        position: relative;
+    }
+
+        .game-divider:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 0, 0, 0.5);
+            top: -3px;
+            filter: blur(2px);
+        }
+
+    .score-chip {
+        background: linear-gradient(to right, #600000, #400000) !important;
+        border: 1px solid #ff3333 !important;
+        color: #ffaaaa !important;
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+        font-family: 'Cinzel', serif;
+        text-shadow: 0 0 5px #ff0000;
+        font-weight: bold;
+    }
+
+    .score-avatar {
+        background: radial-gradient(circle at center, #700000, #400000) !important;
+        border: 2px solid #ff3333 !important;
+        color: #ffaaaa !important;
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+        font-weight: bold;
+        text-shadow: 0 0 5px #ff0000;
+    }
+
+    .cards-container {
+        background: rgba(20, 0, 0, 0.6);
+        border-radius: 4px;
+        padding: 15px;
+        box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(255, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+        position: relative;
+    }
+
+        .cards-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60,30 A20,20 0 1 1 60,70 A20,20 0 1 1 60,30 Z M48,50 A5,7 0 1 0 48,64 A5,7 0 1 0 48,50 Z M72,50 A5,7 0 1 0 72,64 A5,7 0 1 0 72,50 Z M40,75 Q60,90 80,75 L60,85 Z' fill='none' stroke='%23600' stroke-width='0.8' stroke-opacity='0.2'/%3E%3C/svg%3E");
+            opacity: 0.2;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+    .pulse-glow {
+        animation: pulseglow 3s infinite alternate;
+    }
+
+    @@keyframes pulseglow {
+        0% {
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+        }
+
+        50% {
+            text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000;
+        }
+
+        100% {
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+        }
+    }
+
+    /* Add blood dripping effect to elements */
+    .title-text::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 15px;
+        background-image: radial-gradient(circle at 10% 0, #ff0000 0%, #ff0000 50%, transparent 55%), radial-gradient(circle at 30% 0, #ff0000 0%, #ff0000 40%, transparent 45%), radial-gradient(circle at 50% 0, #ff0000 0%, #ff0000 60%, transparent 65%), radial-gradient(circle at 70% 0, #ff0000 0%, #ff0000 40%, transparent 45%), radial-gradient(circle at 90% 0, #ff0000 0%, #ff0000 50%, transparent 55%);
+        filter: blur(1px);
+    }
+
+    /* Simple red cursor */
+    html {
+        cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='6' fill='%23ff0000' filter='drop-shadow(0 0 2px %23fff)'/%3E%3C/svg%3E"), auto;
+    }
+
+    /* /* Enhanced terrifying demon faces with horns */
+    body::before, body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* First demonic face with sharp horns, fangs and menacing eyes */
+        background-image: url("data:image/svg+xml,%3Csvg width='200' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100,140 Q55,70 100,30 Q145,70 100,140 Z' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M70,65 L40,30 Q35,15 50,25' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M130,65 L160,30 Q165,15 150,25' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M75,80 Q60,85 75,110 Q60,120 45,105' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.9'/%3E%3Cpath d='M125,80 Q140,85 125,110 Q140,120 155,105' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.9'/%3E%3Cpath d='M68,93 L82,93' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M118,93 L132,93' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M90,120 L110,120' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.8'/%3E%3Cpath d='M90,120 Q100,145 110,120 Q100,135 90,120' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.8'/%3E%3Cpath d='M80,110 L75,120 M120,110 L125,120' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.8'/%3E%3C/svg%3E"),
+        /* Second demon with curved horns and hellish grin */
+        url("data:image/svg+xml,%3Csvg width='240' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M120,170 Q70,80 120,40 Q170,80 120,170 Z' fill='none' stroke='%23a00' stroke-width='2.8' stroke-opacity='0.8'/%3E%3Cpath d='M85,75 Q70,50 60,30 Q40,20 65,25' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M155,75 Q170,50 180,30 Q200,20 175,25' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M90,100 Q75,110 90,130 Q65,135 65,120' fill='none' stroke='%23a00' stroke-width='2.2' stroke-opacity='0.8'/%3E%3Cpath d='M150,100 Q165,110 150,130 Q175,135 175,120' fill='none' stroke='%23a00' stroke-width='2.2' stroke-opacity='0.8'/%3E%3Cpath d='M82,112 L98,112' fill='none' stroke='%23a00' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M142,112 L158,112' fill='none' stroke='%23a00' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M85,140 Q120,175 155,140' fill='none' stroke='%23a00' stroke-width='3' stroke-opacity='0.9'/%3E%3Cpath d='M90,140 Q120,168 150,140' fill='none' stroke='%23a00' stroke-width='2.8' stroke-opacity='0.9'/%3E%3Cpath d='M100,145 L95,155 M110,145 L105,155 M130,145 L135,155 M140,145 L145,155' fill='none' stroke='%23a00' stroke-width='2' stroke-opacity='0.9'/%3E%3C/svg%3E");
+        background-size: 200px 300px, 240px 400px;
+        pointer-events: none;
+        z-index: -1;
+        animation: floatingSouls 15s infinite linear, demonicTremble 0.5s ease-in-out infinite alternate, burning 4s infinite alternate;
+        filter: drop-shadow(0 0 10px rgba(255, 30, 0, 0.8)) hue-rotate(0deg);
+    }
+
+    body::after {
+        top: 100px;
+        left: 50px;
+        /* Third demon with jagged horns and sharp teeth */
+        background-image: url("data:image/svg+xml,%3Csvg width='200' height='320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100,160 Q50,80 100,40 Q150,80 100,160 Z' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.85'/%3E%3Cpath d='M75,70 L55,40 L40,50 L45,25 L30,40' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.85'/%3E%3Cpath d='M125,70 L145,40 L160,50 L155,25 L170,40' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.85'/%3E%3Cpath d='M70,100 Q50,110 70,125 Q50,140 40,125' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.9'/%3E%3Cpath d='M130,100 Q150,110 130,125 Q150,140 160,125' fill='none' stroke='%23900' stroke-width='2.2' stroke-opacity='0.9'/%3E%3Cpath d='M58,110 A3,5 0 0 1 58,120' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M142,110 A3,5 0 0 0 142,120' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.9'/%3E%3Cpath d='M85,135 Q100,145 115,135' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.85'/%3E%3Cpath d='M85,135 Q100,155 115,135' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.85'/%3E%3Cpath d='M90,135 L85,150 M95,135 L92,148 M105,135 L108,148 M110,135 L115,150' fill='none' stroke='%23900' stroke-width='2' stroke-opacity='0.9'/%3E%3C/svg%3E"),
+        /* Fourth demon with massive horns and malevolent features */
+        url("data:image/svg+xml,%3Csvg width='250' height='350' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M125,170 Q65,90 125,40 Q185,90 125,170 Z' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M85,75 Q65,60 40,20 Q25,10 45,5 Q60,15 70,5' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M165,75 Q185,60 210,20 Q225,10 205,5 Q190,15 180,5' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.8'/%3E%3Cpath d='M95,95 Q70,110 90,135 Q65,145 55,130' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.85'/%3E%3Cpath d='M155,95 Q180,110 160,135 Q185,145 195,130' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.85'/%3E%3Cpath d='M75,118 A5,8 0 1 0 85,118' fill='%23a00' stroke='%23a00' stroke-width='1' stroke-opacity='0.6'/%3E%3Cpath d='M165,118 A5,8 0 1 1 175,118' fill='%23a00' stroke='%23a00' stroke-width='1' stroke-opacity='0.6'/%3E%3Cpath d='M95,145 Q125,175 155,145' fill='none' stroke='%23a00' stroke-width='3' stroke-opacity='0.9'/%3E%3Cpath d='M100,145 L95,160 M110,145 L108,163 M125,145 L125,165 M140,145 L142,163 M150,145 L155,160' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.9'/%3E%3C/svg%3E");
+        background-size: 200px 320px, 250px 350px;
+        animation: floatingSouls 17s infinite linear 3s, demonicTremble 0.5s ease-in-out infinite alternate, burning 4s infinite alternate;
+        filter: drop-shadow(0 0 10px rgba(255, 30, 0, 0.8)) hue-rotate(0deg);
+    }
+
+    /* Add additional demons with a different timing - even more terrifying */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 150px;
+        left: 35%;
+        right: 0;
+        bottom: 0;
+        background-image:
+        /* Fifth demon with twisted horns and hellish expressions */
+        url("data:image/svg+xml,%3Csvg width='220' height='330' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M110,170 Q50,80 110,30 Q170,80 110,170 Z' fill='none' stroke='%23900' stroke-width='2.6' stroke-opacity='0.85'/%3E%3Cpath d='M75,60 Q60,40 50,15 Q35,0 60,5 Q70,-5 50,-10' fill='none' stroke='%23900' stroke-width='2.4' stroke-opacity='0.85'/%3E%3Cpath d='M145,60 Q160,40 170,15 Q185,0 160,5 Q150,-5 170,-10' fill='none' stroke='%23900' stroke-width='2.4' stroke-opacity='0.85'/%3E%3Cpath d='M80,95 Q60,105 80,135 Q55,145 45,130' fill='none' stroke='%23900' stroke-width='2.3' stroke-opacity='0.9'/%3E%3Cpath d='M140,95 Q160,105 140,135 Q165,145 175,130' fill='none' stroke='%23900' stroke-width='2.3' stroke-opacity='0.9'/%3E%3Cpath d='M70,112 A4,6 0 1 0 70,124' fill='%23900' stroke='%23900' stroke-width='1' stroke-opacity='0.5'/%3E%3Cpath d='M150,112 A4,6 0 1 1 150,124' fill='%23900' stroke='%23900' stroke-width='1' stroke-opacity='0.5'/%3E%3Cpath d='M85,145 Q110,180 135,145 Q110,160 85,145' fill='none' stroke='%23900' stroke-width='2.5' stroke-opacity='0.85'/%3E%3Cpath d='M90,145 L85,165 M100,145 L95,170 M120,145 L125,170 M130,145 L135,165' fill='none' stroke='%23900' stroke-width='2.3' stroke-opacity='0.9'/%3E%3C/svg%3E"),
+        /* Sixth demon with multiple horns and fierce expression */
+        url("data:image/svg+xml,%3Csvg width='230' height='340' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M115,170 Q55,80 115,30 Q175,80 115,170 Z' fill='none' stroke='%23a00' stroke-width='2.7' stroke-opacity='0.85'/%3E%3Cpath d='M80,60 L60,30 M80,60 L70,25 M80,60 L90,20' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.85'/%3E%3Cpath d='M150,60 L170,30 M150,60 L160,25 M150,60 L140,20' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.85'/%3E%3Cpath d='M85,100 Q60,110 85,140 Q55,155 45,135' fill='none' stroke='%23a00' stroke-width='2.4' stroke-opacity='0.9'/%3E%3Cpath d='M145,100 Q170,110 145,140 Q175,155 185,135' fill='none' stroke='%23a00' stroke-width='2.4' stroke-opacity='0.9'/%3E%3Cellipse cx='72' cy='118' rx='5' ry='8' fill='%23a00' fill-opacity='0.6'/%3E%3Cellipse cx='158' cy='118' rx='5' ry='8' fill='%23a00' fill-opacity='0.6'/%3E%3Cpath d='M90,145 Q115,175 140,145' fill='none' stroke='%23a00' stroke-width='3' stroke-opacity='0.9'/%3E%3Cpath d='M90,145 Q115,180 140,145' fill='none' stroke='%23a00' stroke-width='2.5' stroke-opacity='0.9'/%3E%3Cpath d='M95,145 L90,165 M105,145 L100,175 M115,145 L115,180 M125,145 L130,175 M135,145 L140,165' fill='none' stroke='%23a00' stroke-width='2.3' stroke-opacity='0.9'/%3E%3C/svg%3E");
+        background-size: 220px 330px, 230px 340px;
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: -1;
+        animation: floatingSouls 19s infinite linear 5s, demonicTremble 0.7s ease-in-out infinite alternate, burning 5s infinite alternate;
+        filter: drop-shadow(0 0 12px rgba(255, 40, 0, 0.8)) hue-rotate(5deg);
+    }
+
+    */
+    /* More violent and menacing trembling effect */
+    @@keyframes demonicTremble {
+        0%
+
+    {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+
+    20% {
+        transform: translateX(2px) translateY(-2px) rotate(0.5deg);
+    }
+
+    40% {
+        transform: translateX(-3px) translateY(1px) rotate(-0.5deg);
+    }
+
+    60% {
+        transform: translateX(3px) translateY(2px) rotate(0.8deg);
+    }
+
+    80% {
+        transform: translateX(-2px) translateY(-1px) rotate(-0.8deg);
+    }
+
+    100% {
+        transform: translateX(2px) translateY(-2px) rotate(0.5deg);
+    }
+
+    }
+
+    /* Enhanced burning effect with intense glowing */
+    @@keyframes burning {
+        0% {
+            filter: drop-shadow(0 0 10px rgba(255, 30, 0, 0.8)) hue-rotate(0deg) brightness(1);
+            opacity: 0.8;
+        }
+
+        25% {
+            filter: drop-shadow(0 0 15px rgba(255, 40, 0, 0.9)) hue-rotate(5deg) brightness(1.1);
+            opacity: 0.85;
+        }
+
+        50% {
+            filter: drop-shadow(0 0 20px rgba(255, 60, 0, 1)) hue-rotate(10deg) brightness(1.2);
+            opacity: 0.9;
+        }
+
+        75% {
+            filter: drop-shadow(0 0 15px rgba(255, 40, 0, 0.9)) hue-rotate(5deg) brightness(1.1);
+            opacity: 0.85;
+        }
+
+        100% {
+            filter: drop-shadow(0 0 10px rgba(255, 30, 0, 0.8)) hue-rotate(0deg) brightness(1);
+            opacity: 0.8;
+        }
+    }
+
+    /* Modified floating animation with more demonic movement */
+    @@keyframes floatingSouls {
+        0% {
+            opacity: 0.7;
+            transform: translateY(0) scale(1) rotate(0deg) skewX(0deg);
+        }
+
+        15% {
+            transform: translateY(-15px) scale(1.02) rotate(-2deg) skewX(2deg);
+        }
+
+        30% {
+            transform: translateY(-30px) scale(1.03) rotate(1deg) skewX(-1deg);
+        }
+
+        45% {
+            transform: translateY(-45px) scale(1.04) rotate(-1.5deg) skewX(1deg);
+        }
+
+        60% {
+            transform: translateY(-60px) scale(1.05) rotate(2deg) skewX(-2deg);
+        }
+
+        75% {
+            transform: translateY(-75px) scale(1.06) rotate(-2.5deg) skewX(1.5deg);
+        }
+
+        90% {
+            transform: translateY(-90px) scale(1.08) rotate(1.5deg) skewX(-1deg);
+            opacity: 0.4;
+        }
+
+        100% {
+            opacity: 0.2;
+            transform: translateY(-100px) scale(1.1) rotate(-1deg) skewX(0deg);
+        }
+    }
+
+    /* Add subtle flame effect under cards on hover */
+    .game-card::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        background: radial-gradient(ellipse at center top, rgba(255, 80, 0, 0.6) 0%, rgba(255, 80, 0, 0) 70%);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .game-card:hover::after {
+        opacity: 1;
+    }
+</style>
+
+@if (_pageLoading)
+{
+    <LoadingPageComponent />
+}
+else
+{
+    @if (UserModel.Level < 9)
+    {
+        <AnticheatSite />
+    }
+    else
+    {
+        @if (_accountVerified == 0)
+        {
+            <VerificationNotificationComponent />
+            <UserNotVerifiedHellInteraction />
+        }
+        else
+        {
+
+                        //The Eye component
+            <MudMessageBox @ref="_mudMessageBox" CancelText="Cancel">
+                <MessageContent>
+                    <MudContainer Class="d-flex flex-column align-items-center justify-content-center">
+                        <MudText><span><i>"I just wanted to thank you for saving me from the beast races"</i></span></MudText>
+                        @* Image for small screens *@
+                        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                            <MudImage Class="my-2" Width="400" Height="300" Src="GamesComponents/BeastRaceComponents/TheEye.png"></MudImage>
+                        </MudHidden>
+                        @* Image for big screens *@
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudImage Class="my-2" Width="500" Height="400" Src="GamesComponents/BeastRaceComponents/TheEye.png"></MudImage>
+                        </MudHidden>
+                        <MudText><b>Accept 1000$ from TheEye?</b></MudText>
+                    </MudContainer>
+                </MessageContent>
+                <YesButton>
+                    <MudButton Class="mx-2" Variant="Variant.Filled" @onclick="() => ClaimTheEye()" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveRedEye">Claim</MudButton>
+                </YesButton>
+            </MudMessageBox>
+
+            @*Mobile Version*@
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h4">Blackjack</MudText>
+                            </MudPaper>
+
+                            @if (_numberWinsPlayer <= 5)
+                            {
+                                <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                    <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                        <MudImage Class="demon" Src="Demons/Treachery1.png" Width="200" Height="200"></MudImage>
+                                    </MudPaper>
+                                </MudTooltip>
+                            }
+                            else if (5 < _numberWinsPlayer && _numberWinsPlayer <= 10)
+                            {
+                                <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                    <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                        <MudImage Class="demon" Src="Demons/Treachery2.png" Width="250" Height="250"></MudImage>
+                                    </MudPaper>
+                                </MudTooltip>
+                            }
+                            else if (_numberWinsPlayer > 10 && _numberWinsPlayer <= 13)
+                            {
+                                <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                    <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                        <MudImage Class="demon " Src="Demons/Treachery3.png" Width="300" Height="300"></MudImage>
+                                    </MudPaper>
+                                </MudTooltip>
+                            }
+                            else if (_numberWinsPlayer > 13)
+                            {
+                                <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                    <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                        <MudImage Class="demon " Src="Demons/Treachery4.png" Width="350" Height="350"></MudImage>
+                                    </MudPaper>
+                                </MudTooltip>
+                            }
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudChip T="int" Size="Size.Medium" Color="Color.Error" Class="score-chip">Satan wins: @_numberWinsDealer</MudChip>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudAvatar Size="Size.Small" Color="Color.Error" Class="score-avatar">@_dealerScore</MudAvatar>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Height="150px" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row cards-container">
+                                <MudItem Class="d-flex flex-wrap justify-content-center align-content-center flex-row">
+                                    @foreach (var card in ListCardsDealer)
+                                    {
+                                        <MudImage Class="mx-2 game-card" Src="@card.Picture" Width="80" Height="100"></MudImage>
+                                    }
+                                </MudItem>
+                            </MudPaper>
+
+                            <MudDivider Class="game-divider" />
+
+                            <MudContainer Class="d-flex justify-content-center align-content-center flex-column mt-4">
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-content-center mb-4 transparentPaper">
+                                    <MudButton Class="mx-2 game-button" Size="Size.Medium" Variant="Variant.Filled" Color="Color.Error" Disabled="_dealerScore != 0" @onclick="DrawCard">Draw</MudButton>
+                                    <MudButton Class="mx-2 game-button" Size="Size.Medium" Variant="Variant.Filled" Color="Color.Error" Disabled="_dealerScore != 0 || _playerScore == 0" @onclick="Dealer">Hold</MudButton>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                    <MudAvatar Size="Size.Small" Color="Color.Error" Class="score-avatar">@_playerScore</MudAvatar>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Height="150px" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row cards-container">
+                                    <MudItem Class="d-flex flex-wrap justify-content-center align-content-center flex-row">
+                                        @foreach (var card in ListCardsPlayer)
+                                        {
+                                            <MudImage Class="mx-2 game-card" Src="@card.Picture" Width="80" Height="100"></MudImage>
+                                        }
+                                    </MudItem>
+                                </MudPaper>
+
+                            </MudContainer>
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudChip T="int" Size="Size.Medium" Color="Color.Error" Class="score-chip">Player wins: @_numberWinsPlayer</MudChip>
+                                @if (UserModel.Eye == 1)
+                                {
+                                    <MudIconButton Class="score-chip demon-float mx-1" Size="Size.Small" Color="Color.Error" @onclick="() => OpenTheEyeDialog(_backdropClick)" Icon="@Icons.Material.Filled.RemoveRedEye"></MudIconButton>
+                                }
+                            </MudPaper>
+
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+
+            </MudHidden>
+
+            @*PC Version*@
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudContainer Class="d-flex flex-column justify-content-center align-items-center transparentPaper">
+
+                            <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center mb-4 transparentPaper">
+                                <MudText Class="title-text pulse-glow" Typo="Typo.h3">Blackjack</MudText>
+                            </MudPaper>
+
+                            @if (_numberWinsPlayer <= 5)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                        <MudImage Class="demon" Src="Demons/Treachery1.png" Width="250" Height="250"></MudImage>
+                                    </MudTooltip>
+                                </MudPaper>
+                            }
+                            else if (5 < _numberWinsPlayer && _numberWinsPlayer <= 10)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                        <MudImage Class="demon" Src="Demons/Treachery2.png" Width="300" Height="300"></MudImage>
+                                    </MudTooltip>
+                                </MudPaper>
+                            }
+                            else if (_numberWinsPlayer > 10 && _numberWinsPlayer <= 13)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                        <MudImage Class="demon" Src="Demons/Treachery3.png" Width="350" Height="350"></MudImage>
+                                    </MudTooltip>
+                                </MudPaper>
+                            }
+                            else if (_numberWinsPlayer > 13)
+                            {
+                                <MudPaper Elevation="0" Class="d-flex flex-column justify-content-center align-items-center my-4 transparentPaper">
+                                    <MudTooltip Text="@_demonMessage" Style="background-color: darkred" Placement="Placement.Right" Arrow="true">
+                                        <MudImage Class="demon" Src="Demons/Treachery4.png" Width="400" Height="400"></MudImage>
+                                    </MudTooltip>
+                                </MudPaper>
+                            }
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudChip T="int" Size="Size.Large" Color="Color.Error" Class="score-chip">Satan wins: @_numberWinsDealer</MudChip>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudAvatar Size="Size.Small" Color="Color.Error" Class="score-avatar">@_dealerScore</MudAvatar>
+                            </MudPaper>
+
+                            <MudPaper Elevation="0" Height="220px" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row cards-container">
+                                <MudItem Class="d-flex justify-content-center align-content-center flex-row">
+                                    @foreach (var card in ListCardsDealer)
+                                    {
+                                        <MudImage Class="mx-2 game-card" Src="@card.Picture" Width="120" Height="170"></MudImage>
+                                    }
+                                </MudItem>
+                            </MudPaper>
+
+                            <MudDivider Class="game-divider" />
+
+                            <MudContainer Class="d-flex justify-content-center align-content-center flex-column mt-4 transparentPaper">
+
+                                <MudPaper Elevation="0" Class="d-flex flex-row justify-content-center align-content-center mb-4 transparentPaper">
+                                    <MudButton Class="mx-2 game-button" Size="Size.Large" Variant="Variant.Filled" Color="Color.Error" Disabled="_dealerScore != 0" @onclick="DrawCard">Draw</MudButton>
+                                    <MudButton Class="mx-2 game-button" Size="Size.Large" Variant="Variant.Filled" Color="Color.Error" Disabled="_dealerScore != 0 || _playerScore == 0" @onclick="Dealer">Hold</MudButton>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                    <MudAvatar Size="Size.Small" Color="Color.Error" Class="score-avatar">@_playerScore</MudAvatar>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Height="220px" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row cards-container">
+                                    <MudItem Class="d-flex justify-content-center align-content-center flex-row">
+                                        @foreach (var card in ListCardsPlayer)
+                                        {
+                                            <MudImage Class="mx-2 game-card" Src="@card.Picture" Width="120" Height="170"></MudImage>
+                                        }
+
+                                    </MudItem>
+                                </MudPaper>
+
+                            </MudContainer>
+
+                            <MudPaper Elevation="0" Style="background-color:transparent;" Class="d-flex justify-content-center align-content-center flex-row mb-2 transparentPaper">
+                                <MudChip T="int" Class="score-chip mx-1" Size="Size.Large" Color="Color.Error">Player wins: @_numberWinsPlayer</MudChip>
+                                @if (UserModel.Eye == 1)
+                                {
+                                    <MudIconButton Class="score-chip demon-float mx-1" Size="Size.Medium" Color="Color.Error" @onclick="() => OpenTheEyeDialog(_backdropClick)" Icon="@Icons.Material.Filled.RemoveRedEye"></MudIconButton>
+                                }
+                            </MudPaper>
+
+
+                        </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudHidden>
+        }
+    }
+}
+
+
+@code {
+    private int _id { get; set; }
+    private int _accountVerified { get; set; }
+    private int _playerScore;
+    private int _dealerScore;
+    private int _gameProgressionLevel = 10;
+    private int _numberWinsPlayer = 0;
+    private int _numberWinsDealer = 0;
+    private bool _playerWon => _numberWinsPlayer == 15;
+    private bool _dealerWon => _numberWinsDealer == 15;
+    private bool? _theEyeComponentResult;
+    private bool _pageLoading = true;
+    private bool _userWonFinalgame => UserModel.BalanceAfterWin > 0;
+    private string _demonMessage = "You really think you can go up against a KING..";
+
+    private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
+
+    private MudMessageBox _mudMessageBox;
+
+    private UserDTO UserModel { get; set; } = new();
+
+    private BlackjackCardsDTO Card = new();
+
+    private List<BlackjackCardsDTO> ListCardsPlayer = new List<BlackjackCardsDTO>();
+    private List<BlackjackCardsDTO> ListCardsDealer = new List<BlackjackCardsDTO>();
+
+    [CascadingParameter] public Task<AuthenticationState>? _AuthStateTask { get; set; }
+
+    private bool _isRefreshing = false;
+
+    private string _gameSessionToken;
+
+    //Open dialog TheEye
+    public async Task OpenTheEyeDialog(DialogOptions options)
+    {
+        _theEyeComponentResult = await _mudMessageBox.ShowAsync(options);
+        StateHasChanged();
+    }
+
+    //Service for claiming TheEye
+    private async Task ClaimTheEye()
+    {
+        await TransactionService.ClaimTheEye(_id);
+        UserModel = await UserService.GetUserByID(_id);
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a game session when the game starts
+        _gameSessionToken = await TransactionService.CreateGameSession("Treachery");
+        if (string.IsNullOrEmpty(_gameSessionToken))
+        {
+            Snackbar.Add("Failed to initialize game session", Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _demonMessage = "You really think you can go up against a KING..";
+
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _id = Convert.ToInt32(user.FindFirst(u => u.Type == "ID")?.Value ?? "0");
+            _accountVerified = Convert.ToInt32(user.FindFirst(u => u.Type == "UserVerified")?.Value ?? "0");
+            try
+            {
+                UserModel = await UserService.GetUserByID(_id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _pageLoading = false;
+            }
+        }
+        else
+        {
+            _id = 0;
+        }
+
+        if (UserModel.Level >= 9)
+        {
+            await Task.Delay(100);
+            await DrawCard();
+        }
+        Console.WriteLine(UserModel.Eye);
+    }
+
+    public async Task DrawCard()
+    {
+        try
+        {
+            var result = await BlackjackService.GetRandomCardAsync();
+
+            bool kartaIzvucena = ListCardsPlayer.Any(c => c.Number == result.Number && c.Suit == result.Suit);
+
+            if (!kartaIzvucena)
+            {
+                ListCardsPlayer.Add(result);
+                _playerScore += result.Value;
+
+                if (_playerScore > 21)
+                {
+                    Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+                    Snackbar.Add("You lost the round! Your score exceeded 21", Severity.Normal);
+                    _numberWinsDealer += 1;
+                    _demonMessage = "I will take your soul!";
+                    await Task.Delay(1000);
+                    NewGame();
+                    return;
+                }
+
+                if (_playerScore == 21)
+                {
+                    Snackbar.Add("Blackjack!", Severity.Normal);
+                    _demonMessage = "Not even that can save you!";
+                    await Task.Delay(1000);
+                }
+            }
+            else
+            {
+                // If the same card is drawn again, recursively call IzvuciKartu to get a different card
+                await DrawCard();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception: " + ex.Message);
+        }
+    }
+
+
+    public async Task Dealer()
+    {
+        if (_playerScore > 14)
+        {
+            while (_dealerScore < 17)
+            {
+                try
+                {
+                    var response = await BlackjackService.GetRandomCardAsync();
+
+                    bool drawnCardDealer = ListCardsDealer.Any(c => c.ID == response.ID)
+                                     || ListCardsPlayer.Any(c => c.ID == response.ID);
+
+                    if (!drawnCardDealer)
+                    {
+                        ListCardsDealer.Add(response);
+                        _dealerScore = _dealerScore + response.Value;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
+            }
+        }
+
+        else if (_playerScore < 15)
+        {
+            while (_dealerScore < 15)
+            {
+                try
+                {
+                    var response = await BlackjackService.GetRandomCardAsync();
+
+                    bool drawnCardPlayer = ListCardsDealer.Any(c => c.ID == response.ID)
+                                     || ListCardsPlayer.Any(c => c.ID == response.ID);
+
+                    if (!drawnCardPlayer)
+                    {
+                        ListCardsDealer.Add(response);
+                        _dealerScore = _dealerScore + response.Value;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
+            }
+
+        }
+        else if (_playerScore < 10)
+        {
+            while (_dealerScore < 11)
+            {
+                try
+                {
+                    var response = await BlackjackService.GetRandomCardAsync();
+
+
+                    bool drawnCardPlayer = ListCardsDealer.Any(c => c.ID == response.ID)
+                                     || ListCardsPlayer.Any(c => c.ID == response.ID);
+
+                    if (!drawnCardPlayer)
+                    {
+                        ListCardsDealer.Add(response);
+                        _dealerScore = _dealerScore + response.Value;
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
+            }
+        }
+
+        else if (_playerScore < 5)
+        {
+            while (_dealerScore < 6)
+            {
+                try
+                {
+                    var response = await BlackjackService.GetRandomCardAsync();
+
+                    bool drawnCardDealer = ListCardsDealer.Any(c => c.ID == response.ID)
+                                     || ListCardsPlayer.Any(c => c.ID == response.ID);
+
+                    if (!drawnCardDealer)
+                    {
+                        ListCardsDealer.Add(response);
+                        _dealerScore = _dealerScore + response.Value;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
+            }
+        }
+
+        StateHasChanged();
+
+        if (_dealerScore > 21)
+        {
+            Snackbar.Add("You won! Dealer's score has exceeded 21", Severity.Normal);
+            _demonMessage = "Now you made me angry...";
+            StateHasChanged();
+            NavMenuState.RefreshNavMenu();
+            _numberWinsPlayer += 1;
+
+            if (_playerWon && !_dealerWon)
+            {
+                Snackbar.Add("In your attempt to gamble your way out of hell, you became its ruler... Gambler's Hell... at last...", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+
+                await TransactionService.GameWonTransaction(_id, UserModel.Balance, _gameProgressionLevel, "Treachery", _gameSessionToken);
+                _demonMessage = "I was eternal... I AM eternal!!!";
+                await Task.Delay(1000);
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+        }
+        else
+        {
+            DetermineWinner();
+        }
+        await Task.Delay(3000);
+        NewGame();
+    }
+
+    public async void DetermineWinner()
+    {
+        if (_playerScore > _dealerScore && _playerScore <= 21)
+        {
+            Snackbar.Add("You won the round!", Severity.Success);
+            _demonMessage = "Winning one round doesn't change what will happen to you!";
+            await Task.Delay(1000);
+
+            _numberWinsPlayer += 1;
+        }
+        else if (_dealerScore > _playerScore && _dealerScore <= 21)
+        {
+            Snackbar.Add("Satan won the round!", Severity.Error);
+            _demonMessage = "I can smell your soul...torture and pain will be eternal!";
+            await Task.Delay(1000);
+            _numberWinsDealer += 1;
+        }
+        else if (_dealerScore == _playerScore)
+        {
+            Snackbar.Add("Tie!", Severity.Normal);
+            _demonMessage = "Delaying the inevitable...";
+            await Task.Delay(1000);
+        }
+
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+
+        //ENDGAME
+        if (_playerWon && !_dealerWon)
+        {
+            Snackbar.Add("In your attempt to gamble your way out of hell, you became its ruler... Gambler's Hell... at last...", Severity.Error, config =>
+            {
+                config.Icon = @Icons.Custom.Uncategorized.ChessKing;
+                config.IconColor = Color.Inherit;
+                config.IconSize = Size.Large;
+            });
+
+            await TransactionService.GameWonTransaction(_id, UserModel.Balance, _gameProgressionLevel, "Treachery", _gameSessionToken);
+            _demonMessage = "I was eternal... I AM eternal!!!";
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+        else if (!_playerWon && _dealerWon)
+        {
+            _demonMessage = "Squirm, scream, beg. It changes nothing.. I always take what's mine!!!";
+            await Task.Delay(1000);
+            await TransactionService.LostToSatan(_id);
+            Snackbar.Add("You left the game...Soultake is activated, Satan claimed your soul...", Severity.Error, config =>
+            {
+                config.Icon = @Icons.Material.Filled.Whatshot;
+                config.IconColor = Color.Inherit;
+                config.IconSize = Size.Large;
+            });
+            await Task.Delay(3000);
+            await Logout();
+            return;
+        }
+    }
+
+    public void NewGame()
+    {
+        _playerScore = 0;
+        _dealerScore = 0;
+        ListCardsPlayer.Clear();
+        ListCardsDealer.Clear();
+        _demonMessage = "You really think you can go up against a KING..";
+        NavMenuState.RefreshNavMenu();
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to the NavigationManager's LocationChanged event
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        // If we're navigating away from the treachery page
+        if (!e.Location.Contains("/treachery"))
+        {
+            // Force disposal of the component
+            Dispose();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("addBeforeUnloadHandler", DotNetObjectReference.Create(this));
+                Console.WriteLine("BeforeUnload handler initialized");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing BeforeUnload handler: {ex.Message}");
+            }
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnBeforeUnload()
+    {
+        try
+        {
+            Console.WriteLine("OnBeforeUnload called");
+            if (!_playerWon && !_dealerWon && (_numberWinsPlayer >= 0 || _numberWinsDealer >= 0))
+            {
+                _isRefreshing = true;
+                Console.WriteLine("Calling HandlePageLeave from OnBeforeUnload");
+                await HandlePageLeave();
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnBeforeUnload: {ex.Message}");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the event to prevent memory leaks
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+
+        // Debug message to confirm Dispose is being called
+        Console.WriteLine("Dispose method called");
+
+        // Debug condition values
+        Console.WriteLine($"playerWon: {_playerWon}, dealerWon: {_dealerWon}");
+        Console.WriteLine($"numberWinsPlayer: {_numberWinsPlayer}, numberWinsDealer: {_numberWinsDealer}");
+
+        // Only trigger the penalty if game is in progress and not completed
+        if (!_playerWon && !_dealerWon && (_numberWinsPlayer >= 0 || _numberWinsDealer >= 0))
+        {
+            Console.WriteLine("Condition met - calling HandlePageLeave");
+            // Call the method to penalize the user for leaving
+            _ = HandlePageLeave();
+        }
+        else
+        {
+            Console.WriteLine("Condition not met - skipping HandlePageLeave");
+        }
+    }
+
+    // Separate async method since Dispose cannot be async
+    private async Task HandlePageLeave()
+    {
+        try
+        {
+            Console.WriteLine($"HandlePageLeave started with user ID: {_id}");
+
+            // Check if user ID is valid
+            if (_id <= 0)
+            {
+                Console.WriteLine("Invalid user ID, cannot process");
+                return;
+            }
+
+            // Add a delay to make sure this completes before browser navigation
+            await Task.Delay(100);
+            await TransactionService.LostToSatan(_id);
+
+
+            if (!_isRefreshing)
+            {
+                Snackbar.Add("You left the game...Soultake is activated, Satan claimed your soul...", Severity.Error, config =>
+                {
+                    config.Icon = @Icons.Material.Filled.Whatshot;
+                    config.IconColor = Color.Inherit;
+                    config.IconSize = Size.Large;
+                });
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandlePageLeave: {ex.Message}");
+            Console.WriteLine($"Error details: {ex.StackTrace}");
+            throw ex;
+        }
+        NavigationManager.NavigateTo("/login");
+    }
+
+    public async Task Logout()
+    {
+        try
+        {
+            // Get the current authentication state
+            var authState = await _AuthStateTask;
+
+            // Pass the current user's Principal to the LogOut method
+            var result = await AuthManager.LogOut(authState.User);
+
+            // Navigate to login page after successful logout
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logout error: {ex.Message}");
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+            throw ex;
+        }
+    }
+}

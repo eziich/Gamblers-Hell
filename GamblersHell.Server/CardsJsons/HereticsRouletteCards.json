@@ -1,0 +1,67 @@
+[
+  {
+    "ID": 1,
+    "Value": 1,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_ace.svg"
+  },
+  {
+    "ID": 2,
+    "Value": 2,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_2.svg"
+  },
+  {
+    "ID": 3,
+    "Value": 3,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_3.svg"
+  },
+  {
+    "ID": 4,
+    "Value": 4,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_4.svg"
+  },
+  {
+    "ID": 5,
+    "Value": 5,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_5.svg"
+  },
+  {
+    "ID": 6,
+    "Value": 6,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_6.svg"
+  },
+  {
+    "ID": 7,
+    "Value": 7,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_7.svg"
+  },
+  {
+    "ID": 8,
+    "Value": 8,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_8.svg"
+  },
+  {
+    "ID": 9,
+    "Value": 9,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_9.svg"
+  },
+  {
+    "ID": 10,
+    "Value": 10,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_10.svg"
+  },
+  {
+    "ID": 11,
+    "Value": 11,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_jack.svg"
+  },
+  {
+    "ID": 12,
+    "Value": 12,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_queen.svg"
+  },
+  {
+    "ID": 13,
+    "Value": 13,
+    "Image": "https://tekeye.uk/playing_cards/Images/svg_playing_cards/fronts/spades_king.svg"
+  }
+]

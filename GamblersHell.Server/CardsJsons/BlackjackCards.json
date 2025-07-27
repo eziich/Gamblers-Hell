@@ -1,0 +1,366 @@
+[
+  {
+    "ID": 1,
+    "Number": "Ace",
+    "Value": 11,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_ace.svg"
+  },
+  {
+    "ID": 2,
+    "Number": "2",
+    "Value": 2,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_2.svg"
+  },
+  {
+    "ID": 3,
+    "Number": "3",
+    "Value": 3,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_3.svg"
+  },
+  {
+    "ID": 4,
+    "Number": "4",
+    "Value": 4,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_4.svg"
+  },
+  {
+    "ID": 5,
+    "Number": "5",
+    "Value": 5,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_5.svg"
+  },
+  {
+    "ID": 6,
+    "Number": "6",
+    "Value": 6,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_6.svg"
+  },
+  {
+    "ID": 7,
+    "Number": "7",
+    "Value": 7,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_7.svg"
+  },
+  {
+    "ID": 8,
+    "Number": "8",
+    "Value": 8,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_8.svg"
+  },
+  {
+    "ID": 9,
+    "Number": "9",
+    "Value": 9,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_9.svg"
+  },
+  {
+    "ID": 10,
+    "Number": "10",
+    "Value": 10,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_10.svg"
+  },
+  {
+    "ID": 11,
+    "Number": "Jack",
+    "Value": 10,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_jack.svg"
+  },
+  {
+    "ID": 12,
+    "Number": "Queen",
+    "Value": 10,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_queen.svg"
+  },
+  {
+    "ID": 13,
+    "Number": "King",
+    "Value": 10,
+    "Suit": "clubs",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/clubs_king.svg"
+  },
+  {
+    "ID": 14,
+    "Number": "Ace",
+    "Value": 11,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_ace.svg"
+  },
+  {
+    "ID": 15,
+    "Number": "2",
+    "Value": 2,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_2.svg"
+  },
+  {
+    "ID": 16,
+    "Number": "3",
+    "Value": 3,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_3.svg"
+  },
+  {
+    "ID": 17,
+    "Number": "4",
+    "Value": 4,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_4.svg"
+  },
+  {
+    "ID": 18,
+    "Number": "5",
+    "Value": 5,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_5.svg"
+  },
+  {
+    "ID": 19,
+    "Number": "6",
+    "Value": 6,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_6.svg"
+  },
+  {
+    "ID": 20,
+    "Number": "7",
+    "Value": 7,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_7.svg"
+  },
+  {
+    "ID": 21,
+    "Number": "8",
+    "Value": 8,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_8.svg"
+  },
+  {
+    "ID": 22,
+    "Number": "9",
+    "Value": 9,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_9.svg"
+  },
+  {
+    "ID": 23,
+    "Number": "10",
+    "Value": 10,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_10.svg"
+  },
+  {
+    "ID": 24,
+    "Number": "Jack",
+    "Value": 10,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_jack.svg"
+  },
+  {
+    "ID": 25,
+    "Number": "Queen",
+    "Value": 10,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_queen.svg"
+  },
+  {
+    "ID": 26,
+    "Number": "King",
+    "Value": 10,
+    "Suit": "spades",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/spades_king.svg"
+  },
+  {
+    "ID": 27,
+    "Number": "Ace",
+    "Value": 11,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_ace.svg"
+  },
+  {
+    "ID": 28,
+    "Number": "2",
+    "Value": 2,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_2.svg"
+  },
+  {
+    "ID": 29,
+    "Number": "3",
+    "Value": 3,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_3.svg"
+  },
+  {
+    "ID": 30,
+    "Number": "4",
+    "Value": 4,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_4.svg"
+  },
+  {
+    "ID": 31,
+    "Number": "5",
+    "Value": 5,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_5.svg"
+  },
+  {
+    "ID": 32,
+    "Number": "6",
+    "Value": 6,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_6.svg"
+  },
+  {
+    "ID": 33,
+    "Number": "7",
+    "Value": 7,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_7.svg"
+  },
+  {
+    "ID": 34,
+    "Number": "8",
+    "Value": 8,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_8.svg"
+  },
+  {
+    "ID": 35,
+    "Number": "9",
+    "Value": 9,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_9.svg"
+  },
+  {
+    "ID": 36,
+    "Number": "10",
+    "Value": 10,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_10.svg"
+  },
+  {
+    "ID": 37,
+    "Number": "Jack",
+    "Value": 10,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_jack.svg"
+  },
+  {
+    "ID": 38,
+    "Number": "Queen",
+    "Value": 10,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_queen.svg"
+  },
+  {
+    "ID": 39,
+    "Number": "King",
+    "Value": 10,
+    "Suit": "hearts",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/hearts_king.svg"
+  },
+  {
+    "ID": 40,
+    "Number": "Ace",
+    "Value": 11,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_ace.svg"
+  },
+  {
+    "ID": 41,
+    "Number": "2",
+    "Value": 2,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_2.svg"
+  },
+  {
+    "ID": 42,
+    "Number": "3",
+    "Value": 3,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_3.svg"
+  },
+  {
+    "ID": 43,
+    "Number": "4",
+    "Value": 4,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_4.svg"
+  },
+  {
+    "ID": 44,
+    "Number": "5",
+    "Value": 5,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_5.svg"
+  },
+  {
+    "ID": 45,
+    "Number": "6",
+    "Value": 6,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_6.svg"
+  },
+  {
+    "ID": 46,
+    "Number": "7",
+    "Value": 7,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_7.svg"
+  },
+  {
+    "ID": 47,
+    "Number": "8",
+    "Value": 8,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_8.svg"
+  },
+  {
+    "ID": 48,
+    "Number": "9",
+    "Value": 9,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_9.svg"
+  },
+  {
+    "ID": 49,
+    "Number": "10",
+    "Value": 10,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_10.svg"
+  },
+  {
+    "ID": 50,
+    "Number": "Jack",
+    "Value": 10,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_jack.svg"
+  },
+  {
+    "ID": 51,
+    "Number": "Queen",
+    "Value": 10,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_queen.svg"
+  },
+  {
+    "ID": 52,
+    "Number": "King",
+    "Value": 10,
+    "Suit": "diamonds",
+    "Picture": "https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/diamonds_king.svg"
+  }
+]

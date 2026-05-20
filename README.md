@@ -8,7 +8,7 @@ The application consists of nine gambling games. The concept behind this collect
 ---
 
 ## Technologies
-- Backend: C# ASP .NET core
+- Backend: C# / ASP .NET core
 - Database: SQLite
 - Frontend: 
   - Framework & Logic: Blazor 

@@ -12,7 +12,7 @@ The application consists of nine gambling games. The concept behind this collect
 - Database: SQLite
 - Frontend: 
   - Framework & Logic: Blazor 
-  - UI & Design:** HTML, CSS & MudBlazor (Component Library)
+  - UI & Design: HTML, CSS & MudBlazor (Component Library)
 
 ---
 
